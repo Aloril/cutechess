@@ -91,6 +91,7 @@ class LIB_EXPORT ChessGame : public QObject
 		void finished(ChessGame* game = 0);
 		void startFailed(ChessGame* game = 0);
 		void playersReady();
+		void pgnMove();
 
 	private slots:
 		void startGame();

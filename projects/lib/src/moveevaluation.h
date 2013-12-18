@@ -71,6 +71,8 @@ class LIB_EXPORT MoveEvaluation
 		 */
 		QString pv() const;
 
+		int nps() const;
+		int tbHits() const;
 
 		/*! Resets everything to zero. */
 		void clear();
@@ -93,12 +95,17 @@ class LIB_EXPORT MoveEvaluation
 		/*! Sets the principal variation to \a pv. */
 		void setPv(const QString& pv);
 
+		void setNps(int nps);
+		void setTbHits(int tbHits);
+
 	private:
 		bool m_isBookEval;
 		int m_depth;
 		int m_score;
 		int m_time;
 		int m_nodeCount;
+		int m_nps;
+		int m_tbHits;
 		QString m_pv;
 };
 

@@ -179,6 +179,8 @@ class LIB_EXPORT Tournament : public QObject
 		 */
 		void setPgnOutput(const QString& fileName,
 				  PgnGame::PgnMode mode = PgnGame::Verbose);
+		void setLivePgnOutput(const QString& fileName,
+				  PgnGame::PgnMode mode = PgnGame::Verbose);
 
 		/*!
 		 * Sets PgnGame cleanup mode to \a enabled.
@@ -299,6 +301,7 @@ class LIB_EXPORT Tournament : public QObject
 		void onGameFinished(ChessGame* game);
 		void onGameDestroyed(ChessGame* game);
 		void onGameStartFailed(ChessGame* game);
+		void onPgnMove();
 
 	private:
 		struct GameData
@@ -339,6 +342,8 @@ class LIB_EXPORT Tournament : public QObject
 		QMap<int, PgnGame> m_pgnGames;
 		QMap<ChessGame*, GameData*> m_gameData;
 		QVector<Chess::Move> m_openingMoves;
+		QString m_livePgnout;
+		PgnGame::PgnMode m_livePgnOutMode;
 };
 
 #endif // TOURNAMENT_H

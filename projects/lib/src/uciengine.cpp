@@ -315,6 +315,12 @@ void UciEngine::parseInfo(const QVarLengthArray<QStringRef>& tokens,
 			m_eval.setScore(score);
 		}
 		break;
+	case InfoNps:
+		m_eval.setNps(tokens[0].toString().toInt());
+		break;
+	case InfoTbHits:
+		m_eval.setTbHits(tokens[0].toString().toInt());
+		break;
 	default:
 		break;
 	}

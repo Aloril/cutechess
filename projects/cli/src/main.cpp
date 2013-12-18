@@ -244,6 +244,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 	parser.addOption("-debug", QVariant::Bool, 0, 0);
 	parser.addOption("-openings", QVariant::StringList);
 	parser.addOption("-pgnout", QVariant::StringList, 1, 2);
+	parser.addOption("-livepgnout", QVariant::StringList, 1, 2);
 	parser.addOption("-repeat", QVariant::Bool, 0, 0);
 	parser.addOption("-recover", QVariant::Bool, 0, 0);
 	parser.addOption("-site", QVariant::String, 1, 1);
@@ -443,6 +444,20 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 			}
 			if (ok)
 				tournament->setPgnOutput(list.at(0), mode);
+		}
+		else if (name == "-livepgnout")
+		{
+			PgnGame::PgnMode mode = PgnGame::Verbose;
+			QStringList list = value.toStringList();
+			if (list.size() == 2)
+			{
+				if (list.at(1) == "min")
+					mode = PgnGame::Minimal;
+				else
+					ok = false;
+			}
+			if (ok)
+				tournament->setLivePgnOutput(list.at(0), mode);
 		}
 		// Play every opening twice, just switch the players' sides
 		else if (name == "-repeat")
