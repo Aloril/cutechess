@@ -22,6 +22,7 @@
 #include "board/board.h"
 #include "chessplayer.h"
 #include "openingbook.h"
+#include "board/westernboard.h"
 
 
 ChessGame::ChessGame(Chess::Board* board, PgnGame* pgn, QObject* parent)
@@ -228,6 +229,8 @@ static QString evalString(ChessGame *game, const MoveEvaluation& eval)
 	}
 
 	// speed 's' "%d kN/s"
+	int nps = eval.nps();
+	str += ", s=" + QString::number(qFloor(nps / 1000)) + " kN/s";
 
 	// nodes 'n' "%d"
 	str += ", n=" + QString::number(eval.nodeCount());
@@ -236,7 +239,13 @@ static QString evalString(ChessGame *game, const MoveEvaluation& eval)
 	str += ", pv=" + game->board()->sanStringForPv(eval.pv(), Chess::Board::StandardAlgebraic);
 
 	// tbhits 'tb'
+	str += ", tb=" + QString::number(eval.tbHits());
+
 	// 50-move clock 'R50'
+	Chess::WesternBoard *wboard = dynamic_cast<Chess::WesternBoard *>(game->board());
+	if (wboard) {
+		str += ", R50=" + QString::number(50 - wboard->reversibleMoveCount());
+	}
 
 	// eval from white's perspective 'wv'
 	Chess::Side side = game->board()->sideToMove();
@@ -250,7 +259,7 @@ static QString evalString(ChessGame *game, const MoveEvaluation& eval)
 		str += sScore;
 	}
 
-	str += " ";
+	str += ", ";
 #else
 	if (eval.depth() > 0)
 	{

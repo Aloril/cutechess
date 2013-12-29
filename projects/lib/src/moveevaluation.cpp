@@ -85,6 +85,8 @@ void MoveEvaluation::clear()
 	m_score = 0;
 	m_time = 0;
 	m_nodeCount = 0;
+	m_tbHits = 0;
+	m_nps = 0;
 	m_pv.clear();
 }
 
