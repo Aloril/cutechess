@@ -244,7 +244,7 @@ static QString evalString(ChessGame *game, const MoveEvaluation& eval)
 	// 50-move clock 'R50'
 	Chess::WesternBoard *wboard = dynamic_cast<Chess::WesternBoard *>(game->board());
 	if (wboard) {
-		str += ", R50=" + QString::number(50 - wboard->reversibleMoveCount());
+		str += ", R50=" + QString::number(qFloor(((100 - wboard->reversibleMoveCount()) / 2.) + 0.5));
 	}
 
 	// eval from white's perspective 'wv'
