@@ -41,7 +41,7 @@ class LIB_EXPORT ChessGame : public QObject
 	public:
 		ChessGame(Chess::Board* board, PgnGame* pgn, QObject* parent = 0);
 		virtual ~ChessGame();
-		
+
 		QString errorString() const;
 		ChessPlayer* player(Chess::Side side) const;
 		ChessPlayer* playerToMove() const;
@@ -72,6 +72,8 @@ class LIB_EXPORT ChessGame : public QObject
 		void lockThread();
 		void unlockThread();
 
+		QString gameDuration() const;
+
 	public slots:
 		void start();
 		void pause();
@@ -91,6 +93,7 @@ class LIB_EXPORT ChessGame : public QObject
 		void finished(ChessGame* game = 0);
 		void startFailed(ChessGame* game = 0);
 		void playersReady();
+		void pgnMove();
 
 	private slots:
 		void startGame();
@@ -107,11 +110,13 @@ class LIB_EXPORT ChessGame : public QObject
 		void initializePgn();
 		void addPgnMove(const Chess::Move& move, const QString& comment);
 		void emitLastMove();
-		
+		void startGameTimer();
+		int stopGameTimer();
+
 		Chess::Board* m_board;
 		ChessPlayer* m_player[2];
 		TimeControl m_timeControl[2];
-                const OpeningBook* m_book[2];
+		const OpeningBook* m_book[2];
 		int m_bookDepth[2];
 		int m_startDelay;
 		bool m_finished;
@@ -125,6 +130,8 @@ class LIB_EXPORT ChessGame : public QObject
 		QSemaphore m_pauseSem;
 		QSemaphore m_resumeSem;
 		GameAdjudicator m_adjudicator;
+		QTime m_gameTimer;
+		QString m_gameDuration;
 };
 
 #endif // CHESSGAME_H

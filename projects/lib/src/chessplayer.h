@@ -54,7 +54,7 @@ class LIB_EXPORT ChessPlayer : public QObject
 		/*! Creates and initializes a new ChessPlayer object. */
 		ChessPlayer(QObject* parent = 0);
 		virtual ~ChessPlayer();
-		
+
 		/*!
 		 * Returns true if the player is ready for input.
 		 *
@@ -81,7 +81,7 @@ class LIB_EXPORT ChessPlayer : public QObject
 		void newGame(Chess::Side side,
 			     ChessPlayer* opponent,
 			     Chess::Board* board);
-		
+
 		/*!
 		 * Tells the player that the game ended by \a result.
 		 *
@@ -89,7 +89,7 @@ class LIB_EXPORT ChessPlayer : public QObject
 		 * the base implementation.
 		 */
 		virtual void endGame(const Chess::Result& result);
-		
+
 		/*! Returns the player's evaluation of the current position. */
 		const MoveEvaluation& evaluation() const;
 
@@ -108,15 +108,21 @@ class LIB_EXPORT ChessPlayer : public QObject
 		 * necessarily made by the opponent.
 		 */
 		virtual void makeMove(const Chess::Move& move) = 0;
-		
+
 		/*! Forces the player to play \a move as its next move. */
 		void makeBookMove(const Chess::Move& move);
-		
+
 		/*! Returns the player's name. */
 		QString name() const;
-		
+
 		/*! Sets the player's name. */
 		void setName(const QString& name);
+
+		/*! Returns the player's rating. */
+		int rating() const;
+
+		/*! Sets the player's rating. */
+		void setRating(const int rating);
 
 		/*! Returns true if the player can play \a variant. */
 		virtual bool supportsVariant(const QString& variant) const = 0;
@@ -166,7 +172,7 @@ class LIB_EXPORT ChessPlayer : public QObject
 
 		/*! Signals that the player is ready for input. */
 		void ready() const;
-		
+
 		/*!
 		 * Signals the time left in the player's clock when they
 		 * start thinking of their next move.
@@ -184,7 +190,7 @@ class LIB_EXPORT ChessPlayer : public QObject
 
 		/*! Signals the player's move. */
 		void moveMade(const Chess::Move& move) const;
-		
+
 		/*!
 		 * Emitted when the player claims the game to end
 		 * with result \a result.
@@ -242,13 +248,13 @@ class LIB_EXPORT ChessPlayer : public QObject
 		 * move came too late.
 		 */
 		void emitMove(const Chess::Move& move);
-		
+
 		/*! Returns the opposing player. */
 		const ChessPlayer* opponent() const;
 
 		/*! Sets the player's state to \a state. */
 		void setState(State state);
-		
+
 		/*! The current evaluation. */
 		MoveEvaluation m_eval;
 
@@ -264,6 +270,7 @@ class LIB_EXPORT ChessPlayer : public QObject
 		Chess::Side m_side;
 		Chess::Board* m_board;
 		ChessPlayer* m_opponent;
+		int m_rating;
 };
 
 #endif // CHESSPLAYER_H

@@ -1,0 +1,43 @@
+[ 
+   { 
+      "command" : "/Applications/Schach/komodo-tcec/OSX/komodo-tcecr-64-osx", 
+      "name" : "komodo", 
+      "options" : [ 
+         { 
+            "name" : "Hash", 
+            "value" : 32 
+         }, 
+         { 
+            "name" : "OwnBook", 
+            "value" : false 
+         },
+         { 
+            "name" : "Threads", 
+            "value" : 1
+         } 
+      ], 
+      "protocol" : "uci", 
+      "workingDirectory" : "",
+      "rating" : 1500
+   }, 
+   { 
+      "command" : "/Applications/Schach/critter_1.6a_osx/critter-16a", 
+      "name" : "critter", 
+      "options" : [ 
+         { 
+            "name" : "Hash", 
+            "value" : 32 
+         }, 
+         { 
+            "name" : "OwnBook", 
+            "value" : false 
+         },
+         { 
+            "name" : "Threads", 
+            "value" : 1
+         } 
+      ], 
+      "protocol" : "uci", 
+      "workingDirectory" : ""
+   } 
+]

@@ -81,7 +81,7 @@ ChessEngine::ChessEngine(QObject* parent)
 	  m_restartMode(EngineConfiguration::RestartAuto)
 {
 	m_pingTimer->setSingleShot(true);
-	m_pingTimer->setInterval(10000);
+	m_pingTimer->setInterval(30000);
 	connect(m_pingTimer, SIGNAL(timeout()), this, SLOT(onPingTimeout()));
 
 	m_quitTimer->setSingleShot(true);
@@ -122,12 +122,19 @@ void ChessEngine::applyConfiguration(const EngineConfiguration& configuration)
 	foreach (const QString& str, configuration.initStrings())
 		write(str);
 
-	foreach (EngineOption* option, configuration.options())
+	m_configurationString = QString();
+	foreach (EngineOption* option, configuration.options()) {
 		setOption(option->name(), option->value());
+		m_configurationString += option->name() + "=" + option->value().toString() + "; ";
+	}
+	m_configurationString = m_configurationString.trimmed();
 
 	m_whiteEvalPov = configuration.whiteEvalPov();
 	m_restartMode = configuration.restartMode();
 	setClaimsValidated(configuration.areClaimsValidated());
+
+	if (configuration.rating())
+		setRating(configuration.rating());
 }
 
 void ChessEngine::addOption(EngineOption* option)
@@ -198,12 +205,12 @@ void ChessEngine::start()
 {
 	if (state() != NotStarted)
 		return;
-	
+
 	m_pinging = false;
 	setState(Starting);
 
 	flushWriteBuffer();
-	
+
 	startProtocol();
 	m_pinging = true;
 }
@@ -449,4 +456,9 @@ void ChessEngine::quit()
 	connect(m_ioDevice, SIGNAL(readChannelFinished()), this, SLOT(onQuitTimeout()));
 	sendQuit();
 	m_quitTimer->start();
+}
+
+QString ChessEngine::configurationString() const
+{
+	return m_configurationString;
 }

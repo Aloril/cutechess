@@ -22,6 +22,13 @@
 #include <QMap>
 #include <QString>
 #include <QTime>
+#include <QtGlobal>
+#include <QDebug>
+#include <QTextStream>
+#include <QStringList>
+#include <QFile>
+#include <jsonparser.h>
+#include <jsonserializer.h>
 
 class ChessGame;
 class OpeningBook;
@@ -39,6 +46,7 @@ class EngineMatch : public QObject
 		OpeningBook* addOpeningBook(const QString& fileName);
 		void setDebugMode(bool debug);
 		void setRatingInterval(int interval);
+		void setTournamentFile(QString &tournamentFile);
 
 		void start();
 		void stop();
@@ -54,12 +62,15 @@ class EngineMatch : public QObject
 
 	private:
 		void printRanking();
+		void generateSchedule(QVariantList& pList);
+		void generateCrossTable(QVariantList& pList);
 
 		Tournament* m_tournament;
 		bool m_debug;
 		int m_ratingInterval;
 		QMap<QString, OpeningBook*> m_books;
 		QTime m_startTime;
+		QString m_tournamentFile;
 };
 
 #endif // ENGINEMATCH_H

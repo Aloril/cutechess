@@ -49,7 +49,9 @@ Tournament::Tournament(GameManager* gameManager, QObject *parent)
 	  m_openingSuite(0),
 	  m_sprt(new Sprt),
 	  m_pgnOutMode(PgnGame::Verbose),
-	  m_pair(QPair<int, int>(-1, -1))
+	  m_pair(QPair<int, int>(-1, -1)),
+	  m_livePgnOutMode(PgnGame::Verbose),
+	  m_resumeGameNumber(0)
 {
 	Q_ASSERT(gameManager != 0);
 }
@@ -147,6 +149,11 @@ void Tournament::setSite(const QString& site)
 	m_site = site;
 }
 
+void Tournament::setEventDate(const QString& eventDate)
+{
+	m_eventDate = eventDate;
+}
+
 void Tournament::setVariant(const QString& variant)
 {
 	Q_ASSERT(Chess::BoardFactory::variants().contains(variant));
@@ -204,6 +211,12 @@ void Tournament::setPgnOutput(const QString& fileName, PgnGame::PgnMode mode)
 	m_pgnOutMode = mode;
 }
 
+void Tournament::setLivePgnOutput(const QString& fileName, PgnGame::PgnMode mode)
+{
+	m_livePgnout = fileName;
+	m_livePgnOutMode = mode;
+}
+
 void Tournament::setPgnCleanupEnabled(bool enabled)
 {
 	m_pgnCleanup = enabled;
@@ -212,6 +225,12 @@ void Tournament::setPgnCleanupEnabled(bool enabled)
 void Tournament::setOpeningRepetition(bool repeat)
 {
 	m_repeatOpening = repeat;
+}
+
+void Tournament::setResume(int nextGameNumber)
+{
+	Q_ASSERT(nextGame >= 0);
+	m_resumeGameNumber = nextGameNumber;
 }
 
 void Tournament::addPlayer(PlayerBuilder* builder,
@@ -225,35 +244,11 @@ void Tournament::addPlayer(PlayerBuilder* builder,
 	m_players.append(data);
 }
 
-void Tournament::startNextGame()
+ChessGame* Tournament::setupBoard(PlayerData& white, PlayerData& black)
 {
-	if (m_stopping || m_nextGameNumber >= m_finalGameCount)
-		return;
-
-	if (m_nextGameNumber % m_gamesPerEncounter == 0)
-	{
-		m_pair = nextPair();
-
-		if (m_players.size() > 2)
-		{
-			m_startFen.clear();
-			m_openingMoves.clear();
-		}
-	}
-	else
-		m_pair = qMakePair(m_pair.second, m_pair.first);
-
-	PlayerData& white = m_players[m_pair.first];
-	PlayerData& black = m_players[m_pair.second];
-
 	Chess::Board* board = Chess::BoardFactory::create(m_variant);
 	Q_ASSERT(board != 0);
 	ChessGame* game = new ChessGame(board, new PgnGame());
-
-	connect(game, SIGNAL(started(ChessGame*)),
-		this, SLOT(onGameStarted(ChessGame*)));
-	connect(game, SIGNAL(finished(ChessGame*)),
-		this, SLOT(onGameFinished(ChessGame*)));
 
 	game->setTimeControl(white.timeControl, Chess::Side::White);
 	game->setTimeControl(black.timeControl, Chess::Side::Black);
@@ -261,28 +256,83 @@ void Tournament::startNextGame()
 	game->setOpeningBook(white.book, Chess::Side::White, white.bookDepth);
 	game->setOpeningBook(black.book, Chess::Side::Black, black.bookDepth);
 
+	QString whiteName = white.builder->name();
+	QString blackName = black.builder->name();
+
 	bool isRepeat = false;
-	if (!m_startFen.isEmpty() || !m_openingMoves.isEmpty())
-	{
-		game->setStartingFen(m_startFen);
-		game->setMoves(m_openingMoves);
-		m_startFen.clear();
-		m_openingMoves.clear();
-		isRepeat = true;
+	if (m_openingHistory.contains(blackName)) {
+		QVariantMap mMap = m_openingHistory[blackName].toMap();
+		if (mMap.contains(whiteName)) {
+			QVariantMap mmMap = mMap[whiteName].toMap();
+			QString fenString = mmMap["fenString"].toString();
+			QVariantList mList = mmMap["moves"].toList();
+
+			QVector<Chess::Move> moves;
+			QVariantList::const_iterator mv;
+			for (mv = mList.begin(); mv != mList.end(); ++mv) {
+				QVariantList mvList = mv->toList();
+				Chess::Move move(mvList.at(0).toInt(), mvList.at(1).toInt());
+				moves.append(move);
+			}
+			// qDebug("got %s in %s's history (%d moves)", qPrintable(whiteName), qPrintable(blackName), moves.size());
+			game->setStartingFen(fenString);
+			game->setMoves(moves);
+			mMap.remove(whiteName); // get it out of there so we don't find it again
+			m_openingHistory.insert(blackName, mMap);
+			isRepeat = true;
+		}
 	}
-	else if (m_openingSuite != 0)
+	if (!isRepeat)
 		game->setMoves(m_openingSuite->nextGame(m_openingDepth));
 
 	game->generateOpening();
-	if (m_repeatOpening && !isRepeat)
-	{
-		m_startFen = game->startingFen();
-		m_openingMoves = game->moves();
+
+	// save the opening moves in the history
+	if (m_repeatOpening && !isRepeat) {
+		QString fenString = game->startingFen();
+		QVector<Chess::Move> moves = game->moves();
+		QVector<Chess::Move>::const_iterator mv;
+		QVariantList mList;
+		for (mv = moves.begin(); mv != moves.end(); ++mv) {
+			QVariantList mvList;
+			mvList.append(mv->sourceSquare());
+			mvList.append(mv->targetSquare());
+			mList.append(QVariant(mvList));
+		}
+		QVariantMap mMap = m_openingHistory[whiteName].toMap();
+		QVariantMap mmMap;
+		mmMap.insert("fenString", fenString);
+		mmMap.insert("moves", mList);
+		mMap.insert(blackName, mmMap);
+		m_openingHistory.insert(whiteName, mMap);
 	}
+	return game;
+}
+
+void Tournament::startNextGame()
+{
+	if (m_stopping || m_nextGameNumber >= m_finalGameCount)
+		return;
+
+	m_pair = nextPair();
+
+	PlayerData& white = m_players[m_pair.first];
+	PlayerData& black = m_players[m_pair.second];
+
+	ChessGame* game = setupBoard(white, black);
+
+	connect(game, SIGNAL(started(ChessGame*)),
+		this, SLOT(onGameStarted(ChessGame*)));
+	connect(game, SIGNAL(finished(ChessGame*)),
+		this, SLOT(onGameFinished(ChessGame*)));
+	connect(game, SIGNAL(pgnMove()),
+		this, SLOT(onPgnMove()));
 
 	game->pgn()->setEvent(m_name);
 	game->pgn()->setSite(m_site);
 	game->pgn()->setRound(m_round);
+	if (!m_eventDate.isEmpty())
+		game->pgn()->setEventDate(m_eventDate);
 
 	game->setStartDelay(m_startDelay);
 	game->setAdjudicator(m_adjudicator);
@@ -312,6 +362,19 @@ void Tournament::onGameStarted(ChessGame* game)
 	m_players[data->blackIndex].builder->setName(game->player(Chess::Side::Black)->name());
 
 	emit gameStarted(game, data->number, data->whiteIndex, data->blackIndex);
+}
+
+void Tournament::onPgnMove()
+{
+	if (m_livePgnout.isEmpty()) return;
+
+	ChessGame* sender = qobject_cast<ChessGame*>(QObject::sender());
+	Q_ASSERT(sender != 0);
+
+	PgnGame* pgn(sender->pgn());
+
+	QFile::resize(m_livePgnout, 0);
+	pgn->write(m_livePgnout, m_livePgnOutMode);
 }
 
 void Tournament::onGameFinished(ChessGame* game)
@@ -353,6 +416,12 @@ void Tournament::onGameFinished(ChessGame* game)
 	if (!m_pgnout.isEmpty())
 	{
 		m_pgnGames[gameNumber] = *pgn;
+
+		if (!m_livePgnout.isEmpty()) {
+			QFile::resize(m_livePgnout, 0);
+			pgn->write(m_livePgnout, m_livePgnOutMode); // write the final pgn
+		}
+
 		while (m_pgnGames.contains(m_savedGameCount + 1))
 		{
 			PgnGame tmp = m_pgnGames.take(++m_savedGameCount);
@@ -360,8 +429,6 @@ void Tournament::onGameFinished(ChessGame* game)
 				qWarning("Can't write to PGN file %s", qPrintable(m_pgnout));
 		}
 	}
-	if (m_pgnCleanup)
-		delete pgn;
 
 	Chess::Result::Type resultType(game->result().type());
 	bool crashed = (resultType == Chess::Result::Disconnection ||
@@ -386,6 +453,9 @@ void Tournament::onGameFinished(ChessGame* game)
 		connect(m_gameManager, SIGNAL(gameDestroyed(ChessGame*)),
 			this, SLOT(onGameDestroyed(ChessGame*)));
 	}
+
+	if (m_pgnCleanup)
+		delete pgn;
 
 	delete data;
 	game->deleteLater();
@@ -426,8 +496,7 @@ void Tournament::start()
 
 	m_gameData.clear();
 	m_pgnGames.clear();
-	m_startFen.clear();
-	m_openingMoves.clear();
+	m_openingHistory.clear();
 
 	connect(m_gameManager, SIGNAL(ready()),
 		this, SLOT(startNextGame()));
@@ -435,6 +504,38 @@ void Tournament::start()
 	initializePairing();
 	m_finalGameCount = gamesPerCycle() * gamesPerEncounter() * roundMultiplier();
 
+	if (m_resumeGameNumber) {
+		int nextGame = m_resumeGameNumber;
+		OpeningSuite* pgngames = NULL;
+		if (!m_pgnout.isEmpty()) {
+			pgngames = new OpeningSuite(m_pgnout, OpeningSuite::PgnFormat, OpeningSuite::SequentialOrder, 0);
+		}
+
+		while (nextGame--) {
+			if (m_nextGameNumber >= m_finalGameCount)
+				return;
+
+			m_pair = nextPair();
+
+			if (m_openingSuite != 0) {
+				PlayerData& white = m_players[m_pair.first];
+				PlayerData& black = m_players[m_pair.second];
+
+				ChessGame* game = setupBoard(white, black);
+				delete game;
+			}
+
+			if (pgngames) {
+				m_pgnGames[++m_savedGameCount] = pgngames->nextGame(INT_MAX - 1);
+			}
+
+			++m_nextGameNumber;
+			++m_finishedGameCount;
+		}
+
+		if (pgngames)
+			delete pgngames;
+	}
 	startNextGame();
 }
 

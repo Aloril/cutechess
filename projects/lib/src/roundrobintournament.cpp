@@ -17,6 +17,7 @@
 
 
 #include "roundrobintournament.h"
+#include "playerbuilder.h"
 
 RoundRobinTournament::RoundRobinTournament(GameManager* gameManager,
 					   QObject *parent)
@@ -28,6 +29,48 @@ RoundRobinTournament::RoundRobinTournament(GameManager* gameManager,
 QString RoundRobinTournament::type() const
 {
 	return "round-robin";
+}
+
+QList< QPair<QString, QString> > RoundRobinTournament::getPairings() const
+{
+	int pCount = playerCount() + (playerCount() % 2);
+	QList<int> topHalf;
+	QList<int> bottomHalf;
+
+	for (int i = 0; i < pCount / 2; i++)
+		topHalf.append(i);
+	for (int i = pCount - 1; i >= pCount / 2; i--)
+		bottomHalf.append(i);
+
+	int pairNumber = 0;
+	int currentRound = 1;
+	int count = finalGameCount();
+	int gameNumber = 0;
+	QList< QPair<QString, QString> > pList;
+
+	while (gameNumber < count) {
+		if (pairNumber >= topHalf.size()) {
+			pairNumber = 0;
+			currentRound++;
+			topHalf.insert(1, bottomHalf.takeFirst());
+			bottomHalf.append(topHalf.takeLast());
+		}
+		int white = topHalf.at(pairNumber);
+		int black = bottomHalf.at(pairNumber);
+
+		if (currentRound % 2 == 0)
+			qSwap(white, black);
+
+		pairNumber++;
+
+		if (white < playerCount() && black < playerCount()) {
+			pList.append(qMakePair(playerAt(white).builder->name(), playerAt(black).builder->name()));
+			gameNumber++;
+		}
+		else
+			; // don't count byes
+	}
+	return pList;
 }
 
 void RoundRobinTournament::initializePairing()

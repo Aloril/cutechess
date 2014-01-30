@@ -50,6 +50,15 @@ class LIB_EXPORT GaviotaTablebase
 		};
 		Q_DECLARE_FLAGS(Castling, CastlingFlag)
 
+		enum CompressionScheme
+		{
+			Uncompressed = 0,
+			CP1,
+			CP2,
+			CP3,
+			CP4
+		};
+
 		/*! Synonym for QList< QPair<Chess::Square, Chess::Piece> >. */
 		typedef QList< QPair<Chess::Square, Chess::Piece> > PieceList;
 
@@ -61,7 +70,7 @@ class LIB_EXPORT GaviotaTablebase
 		 * The tablebases should be located in the directories listed
 		 * in \a paths.
 		 */
-		static bool initialize(const QStringList& paths);
+		static bool initialize(const QStringList& paths, const CompressionScheme scheme = CP4);
 		/*! Cleans up when the tablebases aren't needed any more. */
 		static void cleanup();
 		/*!

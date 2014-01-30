@@ -87,7 +87,7 @@ class LIB_EXPORT ChessEngine : public ChessPlayer
 		 * get a response to the ping.
 		 */
 		void ping();
-		
+
 		/*! Returns the engine's chess protocol. */
 		virtual QString protocol() const = 0;
 
@@ -112,13 +112,16 @@ class LIB_EXPORT ChessEngine : public ChessPlayer
 
 		/*! Returns a list of supported chess variants. */
 		QStringList variants() const;
-		
+
+		/*! Returns the options set by the engine's configuration. */
+		QString configurationString() const;
+
 	public slots:
 		// Inherited from ChessPlayer
 		virtual void go();
 		virtual void quit();
 		virtual void kill();
-		
+
 	protected:
 		/*!
 		 * Reads the first whitespace-delimited token from a string
@@ -252,6 +255,7 @@ class LIB_EXPORT ChessEngine : public ChessPlayer
 		QList<EngineOption*> m_options;
 		QMap<QString, QVariant> m_optionBuffer;
 		EngineConfiguration::RestartMode m_restartMode;
+		QString m_configurationString;
 };
 
 #endif // CHESSENGINE_H

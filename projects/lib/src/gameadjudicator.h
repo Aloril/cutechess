@@ -51,7 +51,7 @@ class LIB_EXPORT GameAdjudicator
 		 * Sets the resign adjudication threshold for each game.
 		 *
 		 * A game will be adjudicated as a loss for the player that
-		 * made the last move if it reports a score that's at least
+		 * made the last move if both players report a score that's at least
 		 * \a score centipawns below zero for at least \a moveCount
 		 * consecutive moves.
 		 */
@@ -69,11 +69,13 @@ class LIB_EXPORT GameAdjudicator
 		 *
 		 * \a board should be at the position that follows the move.
 		 * \a eval should be the evaluation of the move.
+		 * \a resetDraw should be set to true if board conditions mandate
+		 *    that the draw count be reset (e.g. a pawn move was made)
 		 *
 		 * result() can be called after this function to find out if
 		 * the game should be adjudicated.
 		 */
-		void addEval(const Chess::Board* board, const MoveEvaluation& eval);
+		void addEval(const Chess::Board* board, const MoveEvaluation& eval, bool resetDraw = false);
 		/*!
 		 * Returns the adjudication result.
 		 *
@@ -82,6 +84,8 @@ class LIB_EXPORT GameAdjudicator
 		 */
 		Chess::Result result() const;
 
+		void resetDrawCount();
+
 	private:
 		int m_drawMoveNum;
 		int m_drawMoveCount;
@@ -89,7 +93,8 @@ class LIB_EXPORT GameAdjudicator
 		int m_drawScoreCount;
 		int m_resignMoveCount;
 		int m_resignScore;
-		int m_resignScoreCount[2];
+		int m_resignLoserScoreCount[2];
+		int m_resignWinnerScoreCount[2];
 		bool m_tbEnabled;
 		Chess::Result m_result;
 };

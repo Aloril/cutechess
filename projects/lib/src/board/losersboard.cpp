@@ -108,14 +108,14 @@ Result LosersBoard::result()
 	// 50 move rule
 	if (reversibleMoveCount() >= 100)
 	{
-		str = tr("Draw by fifty moves rule");
+		str = tr("fifty moves rule");
 		return Result(Result::Draw, Side::NoSide, str);
 	}
 
 	// 3-fold repetition
 	if (repeatCount() >= 2)
 	{
-		str = tr("Draw by 3-fold repetition");
+		str = tr("3-fold repetition");
 		return Result(Result::Draw, Side::NoSide, str);
 	}
 

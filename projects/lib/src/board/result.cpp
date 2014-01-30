@@ -94,11 +94,28 @@ Result::Type Result::type() const
 	return m_type;
 }
 
+QString Result::shortDescription() const
+{
+	if (!m_description.isEmpty()) {
+		QString str = m_description;
+		str[0] = str.at(0).toUpper();
+		return str;
+	}
+	return description();
+}
+
 QString Result::description() const
 {
 	QString w(winner().toString());
 	QString l(loser().toString());
 	QString str;
+
+	// handle the draw case first, since it's the easiest
+	if (m_type == Draw && !m_description.isEmpty())
+	{
+		str = tr("Draw by ") + m_description;
+		return str;
+	}
 
 	if (m_type == Resignation)
 		str = tr("%1 resigns").arg(l);

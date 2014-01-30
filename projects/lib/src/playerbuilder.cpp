@@ -18,7 +18,8 @@
 #include "playerbuilder.h"
 
 PlayerBuilder::PlayerBuilder(const QString& name)
-	: m_name(name)
+	: m_name(name),
+	  m_rating(0)
 {
 }
 
@@ -34,4 +35,14 @@ QString PlayerBuilder::name() const
 void PlayerBuilder::setName(const QString& name)
 {
 	m_name = name;
+}
+
+int PlayerBuilder::rating() const
+{
+	return m_rating;
+}
+
+void PlayerBuilder::setRating(const int rating)
+{
+	m_rating = rating;
 }

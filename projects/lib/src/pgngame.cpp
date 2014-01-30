@@ -39,6 +39,7 @@ QTextStream& operator<<(QTextStream& out, const PgnGame& game)
 PgnGame::PgnGame()
 	: m_startingSide(Chess::Side::White),
 	  m_eco(EcoNode::root()),
+	  m_lastEco(EcoNode::root()),
 	  m_tagReceiver(0)
 {
 }
@@ -52,6 +53,7 @@ void PgnGame::clear()
 {
 	m_startingSide = Chess::Side();
 	m_eco = EcoNode::root();
+	m_lastEco = m_eco;
 	m_tags.clear();
 	m_moves.clear();
 }
@@ -97,7 +99,13 @@ void PgnGame::addMove(const MoveData& data)
 		setTag("ECO", m_eco->ecoCode());
 		setTag("Opening", m_eco->opening());
 		setTag("Variation", m_eco->variation());
+		m_lastEco = m_eco;
 	}
+}
+
+const EcoNode *PgnGame::eco()
+{
+	return m_lastEco;
 }
 
 Chess::Board* PgnGame::createBoard() const
@@ -190,7 +198,7 @@ bool PgnGame::read(PgnStream& in, int maxMoves)
 	clear();
 	if (!in.nextGame())
 		return false;
-	
+
 	while (in.status() == PgnStream::Ok)
 	{
 		bool stop = false;
@@ -257,12 +265,12 @@ void PgnGame::write(QTextStream& out, PgnMode mode) const
 {
 	if (m_tags.isEmpty())
 		return;
-	
+
 	const QList< QPair<QString, QString> > tags = this->tags();
 	int maxTags = (mode == Verbose) ? tags.size() : 7;
 	for (int i = 0; i < maxTags; i++)
 		writeTag(out, tags.at(i).first, tags.at(i).second);
-	
+
 	if (mode == Minimal && m_tags.contains("FEN"))
 	{
 		writeTag(out, "FEN", m_tags["FEN"]);
@@ -404,6 +412,11 @@ void PgnGame::setEvent(const QString& event)
 	setTag("Event", event);
 }
 
+void PgnGame::setEventDate(const QString& eventDate)
+{
+	setTag("EventDate", eventDate);
+}
+
 void PgnGame::setSite(const QString& site)
 {
 	setTag("Site", site);
@@ -425,6 +438,14 @@ void PgnGame::setPlayerName(Chess::Side side, const QString& name)
 		setTag("White", name);
 	else if (side == Chess::Side::Black)
 		setTag("Black", name);
+}
+
+void PgnGame::setPlayerRating(Chess::Side side, const int rating)
+{
+	if (side == Chess::Side::White && rating) // remove "&& rating" if "-" is desired
+		setTag("WhiteElo", rating ? QString::number(rating) : "-");
+	else if (side == Chess::Side::Black && rating)
+		setTag("BlackElo", rating ? QString::number(rating) : "-");
 }
 
 void PgnGame::setResult(const Chess::Result& result)

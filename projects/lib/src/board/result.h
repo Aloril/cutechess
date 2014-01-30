@@ -94,6 +94,8 @@ class LIB_EXPORT Result
 		Type type() const;
 		/*! Returns the result description. */
 		QString description() const;
+
+		QString shortDescription() const;
 		/*!
 		 * Returns the short string representation of the result.
 		 * Can be "1-0", "0-1", "1/2-1/2", or "*".

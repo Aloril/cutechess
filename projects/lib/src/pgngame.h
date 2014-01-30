@@ -117,7 +117,7 @@ class LIB_EXPORT PgnGame
 		 * Returns true if successfull.
 		 */
 		bool write(const QString& filename, PgnMode mode = Verbose) const;
-		
+
 		/*!
 		 * Returns true if the game's variant is "standard" and it's
 		 * played from the default starting position; otherwise
@@ -155,6 +155,8 @@ class LIB_EXPORT PgnGame
 		void setTag(const QString& tag, const QString& value);
 		/*! Sets the name of the tournament or match event. */
 		void setEvent(const QString& event);
+		/*! Sets the start date of the event. */
+		void setEventDate(const QString& eventDate);
 		/*! Sets the location of the event. */
 		void setSite(const QString& site);
 		/*! Sets the starting date of the game. */
@@ -163,6 +165,8 @@ class LIB_EXPORT PgnGame
 		void setRound(int round);
 		/*! Sets the player's name who plays \a side. */
 		void setPlayerName(Chess::Side side, const QString& name);
+		/*! Sets the player's rating who plays \a side. */
+		void setPlayerRating(Chess::Side side, const int rating);
 		/*! Sets the result of the game. */
 		void setResult(const Chess::Result& result);
 		/*! Sets the chess variant of the game. */
@@ -188,11 +192,15 @@ class LIB_EXPORT PgnGame
 		 */
 		void setTagReceiver(QObject* receiver);
 
+		/*! Returns the ECO information for this game */
+		const EcoNode *eco();
+
 	private:
 		bool parseMove(PgnStream& in);
-		
+
 		Chess::Side m_startingSide;
 		const EcoNode* m_eco;
+		const EcoNode* m_lastEco;
 		QMap<QString, QString> m_tags;
 		QVector<MoveData> m_moves;
 		QObject* m_tagReceiver;

@@ -519,7 +519,7 @@ void XboardEngine::parseLine(const QString& line)
 		return;
 
 	if (command == "1-0" || command == "0-1"
-	||  command == "*" || command == "1/2-1/2" || command == "resign")
+	||  command == "*" || command == "1/2-1/2" /*|| command == "resign"*/) // ignore resign from engine TCEC
 	{
 		if ((state() != Thinking && state() != Observing)
 		||  !board()->result().isNone())

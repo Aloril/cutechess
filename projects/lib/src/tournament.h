@@ -24,6 +24,7 @@
 #include <QList>
 #include <QVector>
 #include <QMap>
+#include <QVariant>
 #include "board/move.h"
 #include "timecontrol.h"
 #include "pgngame.h"
@@ -78,6 +79,8 @@ class LIB_EXPORT Tournament : public QObject
 
 		/*! Returns the tournament type (eg. "round-robin" or "gauntlet"). */
 		virtual QString type() const = 0;
+		/*! Returns a list of all pairings (by player name) for this tournament. */
+		virtual QList< QPair<QString, QString> > getPairings() const = 0;
 		/*! Returns the GameManager that manages the tournament's games. */
 		GameManager* gameManager() const;
 		/*! Returns true if the tournament is finished; otherwise returns false. */
@@ -135,6 +138,8 @@ class LIB_EXPORT Tournament : public QObject
 		void setSite(const QString& site);
 		/*! Sets the games' chess variant to \a variant. */
 		void setVariant(const QString& variant);
+		/*! Sets the tournament'S eevnt date to \a eventDate. */
+		void setEventDate(const QString& eventDate);
 		/*!
 		 * Sets the game count per encounter to \a counter.
 		 *
@@ -179,6 +184,15 @@ class LIB_EXPORT Tournament : public QObject
 		 */
 		void setPgnOutput(const QString& fileName,
 				  PgnGame::PgnMode mode = PgnGame::Verbose);
+ 		/*!
+ 		 * Sets the live PGN output file for the games to \a fileName.
+ 		 *
+ 		 * The games are saved to the file in mode \a mode.
+ 		 * If no live PGN output file is set (default) then cutechess will
+		 * not generate a live PGN.
+ 		 */
+		void setLivePgnOutput(const QString& fileName,
+				  PgnGame::PgnMode mode = PgnGame::Verbose);
 
 		/*!
 		 * Sets PgnGame cleanup mode to \a enabled.
@@ -195,6 +209,16 @@ class LIB_EXPORT Tournament : public QObject
 		 * rounds; otherwise each game gets its own opening.
 		 */
 		void setOpeningRepetition(bool repeat);
+
+		/*!
+		 * Sets the tournament mode to \a resume.
+		 *
+		 * If \a resume is true and the \a tournamentfile option is enabled,
+		 * cutechess will attempt to resume the tournament after an interruption.
+		 * Play will resume after the last completed game. Openings, including
+		 * repeated and randomly chosen openings, will resume as well.
+		 */
+		void setResume(int nextGameNumber);
 		/*!
 		 * Adds player \a builder to the tournament.
 		 *
@@ -293,12 +317,15 @@ class LIB_EXPORT Tournament : public QObject
 		 */
 		virtual QPair<int, int> nextPair() = 0;
 
+		ChessGame* setupBoard(PlayerData& white, PlayerData& black);
+
 	private slots:
 		void startNextGame();
 		void onGameStarted(ChessGame* game);
 		void onGameFinished(ChessGame* game);
 		void onGameDestroyed(ChessGame* game);
 		void onGameStartFailed(ChessGame* game);
+		void onPgnMove();
 
 	private:
 		struct GameData
@@ -332,13 +359,16 @@ class LIB_EXPORT Tournament : public QObject
 		OpeningSuite* m_openingSuite;
 		Sprt* m_sprt;
 		QString m_pgnout;
-		QString m_startFen;
 		PgnGame::PgnMode m_pgnOutMode;
 		QPair<int, int> m_pair;
 		QList<PlayerData> m_players;
 		QMap<int, PgnGame> m_pgnGames;
 		QMap<ChessGame*, GameData*> m_gameData;
-		QVector<Chess::Move> m_openingMoves;
+		QString m_livePgnout;
+		PgnGame::PgnMode m_livePgnOutMode;
+		QString m_eventDate;
+		int m_resumeGameNumber;
+		QVariantMap m_openingHistory;
 };
 
 #endif // TOURNAMENT_H

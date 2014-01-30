@@ -59,6 +59,9 @@ class LIB_EXPORT WesternBoard : public Board
 		virtual int height() const;
 		virtual Result result();
 
+		/*! Returns the number of consecutive reversible moves made. */
+		int reversibleMoveCount() const;
+
 	protected:
 		/*! The king's castling side. */
 		enum CastlingSide
@@ -104,8 +107,6 @@ class LIB_EXPORT WesternBoard : public Board
 		 * a legal move in the current position.
 		 */
 		bool hasCastlingRight(Side side, CastlingSide castlingSide) const;
-		/*! Returns the number of consecutive reversible moves made. */
-		int reversibleMoveCount() const;
 		/*!
 		 * Removes castling rights at \a square.
 		 *

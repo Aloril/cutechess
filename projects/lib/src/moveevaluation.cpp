@@ -22,7 +22,9 @@ MoveEvaluation::MoveEvaluation()
 	  m_depth(0),
 	  m_score(0),
 	  m_time(0),
-	  m_nodeCount(0)
+	  m_nodeCount(0),
+	  m_nps(0),
+	  m_tbHits(0)
 {
 }
 
@@ -66,6 +68,16 @@ QString MoveEvaluation::pv() const
 	return m_pv;
 }
 
+int MoveEvaluation::nps() const
+{
+	return m_nps;
+}
+
+int MoveEvaluation::tbHits() const
+{
+	return m_tbHits;
+}
+
 void MoveEvaluation::clear()
 {
 	m_isBookEval = false;
@@ -73,6 +85,8 @@ void MoveEvaluation::clear()
 	m_score = 0;
 	m_time = 0;
 	m_nodeCount = 0;
+	m_tbHits = 0;
+	m_nps = 0;
 	m_pv.clear();
 }
 
@@ -104,4 +118,16 @@ void MoveEvaluation::setNodeCount(int nodeCount)
 void MoveEvaluation::setPv(const QString& pv)
 {
 	m_pv = pv;
+}
+
+void MoveEvaluation::setNps(int nps)
+{
+	// note that this is only applicable to UCI engines
+	m_nps = nps;
+}
+
+void MoveEvaluation::setTbHits(int tbHits)
+{
+	// note that this is only applicable to UCI engines
+	m_tbHits = tbHits;
 }

@@ -24,7 +24,7 @@ const char** s_paths = 0;
 char* s_initInfo = 0;
 
 
-bool GaviotaTablebase::initialize(const QStringList& paths)
+bool GaviotaTablebase::initialize(const QStringList& paths, const CompressionScheme scheme)
 {
 	s_paths = tbpaths_init();
 	foreach (const QString& path, paths)
@@ -34,7 +34,7 @@ bool GaviotaTablebase::initialize(const QStringList& paths)
 			return false;
 	}
 
-	s_initInfo = tb_init(1, tb_CP4, s_paths);
+	s_initInfo = tb_init(1, scheme, s_paths);
 	tbcache_init(32*1024*1024, 96);
 	tbstats_reset();
 
@@ -129,13 +129,10 @@ Chess::Result GaviotaTablebase::result(const Chess::Side& side,
 
 	if (ok)
 	{
-		Chess::Side winner(Chess::Side::NoSide);
-		if (info == tb_WMATE)
-			winner = Chess::Side::White;
-		else if (info == tb_BMATE)
-			winner = Chess::Side::Black;
+		Chess::Side winner;
 
-		return Chess::Result(Chess::Result::Adjudication, winner, "GTB");
+		winner = (info == tb_WMATE) ? Chess::Side::White : (info == tb_BMATE) ? Chess::Side::Black : Chess::Side::NoSide;
+		return Chess::Result(Chess::Result::Adjudication, winner, "TB position");
 	}
 
 	return Chess::Result();

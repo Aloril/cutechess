@@ -24,6 +24,7 @@ EngineBuilder::EngineBuilder(const EngineConfiguration& config)
 	: PlayerBuilder(config.name()),
 	  m_config(config)
 {
+	setRating(config.rating());
 }
 
 ChessPlayer* EngineBuilder::create(QObject* receiver,

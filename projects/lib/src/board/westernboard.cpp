@@ -1196,7 +1196,7 @@ Result WesternBoard::result()
 		}
 		else
 		{
-			str = tr("Draw by stalemate");
+			str = tr("stalemate");
 			return Result(Result::Draw, Side::NoSide, str);
 		}
 	}
@@ -1216,21 +1216,21 @@ Result WesternBoard::result()
 	}
 	if (material[Side::White] <= 3 && material[Side::Black] <= 3)
 	{
-		str = tr("Draw by insufficient mating material");
+		str = tr("insufficient material");
 		return Result(Result::Draw, Side::NoSide, str);
 	}
 
 	// 50 move rule
 	if (m_reversibleMoveCount >= 100)
 	{
-		str = tr("Draw by fifty moves rule");
+		str = tr("fifty moves rule");
 		return Result(Result::Draw, Side::NoSide, str);
 	}
 
 	// 3-fold repetition
 	if (repeatCount() >= 2)
 	{
-		str = tr("Draw by 3-fold repetition");
+		str = tr("3-fold repetition");
 		return Result(Result::Draw, Side::NoSide, str);
 	}
 

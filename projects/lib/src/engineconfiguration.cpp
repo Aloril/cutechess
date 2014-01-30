@@ -25,7 +25,8 @@ EngineConfiguration::EngineConfiguration()
 	: m_variants(QStringList() << "standard"),
 	  m_whiteEvalPov(false),
 	  m_validateClaims(true),
-	  m_restartMode(RestartAuto)
+	  m_restartMode(RestartAuto),
+	  m_rating(0)
 {
 }
 
@@ -38,7 +39,8 @@ EngineConfiguration::EngineConfiguration(const QString& name,
 	  m_variants(QStringList() << "standard"),
 	  m_whiteEvalPov(false),
 	  m_validateClaims(true),
-	  m_restartMode(RestartAuto)
+	  m_restartMode(RestartAuto),
+	  m_rating(0)
 {
 }
 
@@ -46,7 +48,8 @@ EngineConfiguration::EngineConfiguration(const QVariant& variant)
 	: m_variants(QStringList() << "standard"),
 	  m_whiteEvalPov(false),
 	  m_validateClaims(true),
-	  m_restartMode(RestartAuto)
+	  m_restartMode(RestartAuto),
+	  m_rating(0)
 {
 	const QVariantMap map = variant.toMap();
 
@@ -88,6 +91,11 @@ EngineConfiguration::EngineConfiguration(const QVariant& variant)
 				addOption(option);
 		}
 	}
+
+	if (map.contains("rating"))
+	{
+		setRating(map["rating"].toInt());
+	}
 }
 
 EngineConfiguration::EngineConfiguration(const EngineConfiguration& other)
@@ -100,7 +108,8 @@ EngineConfiguration::EngineConfiguration(const EngineConfiguration& other)
 	  m_variants(other.m_variants),
 	  m_whiteEvalPov(other.m_whiteEvalPov),
 	  m_validateClaims(other.m_validateClaims),
-	  m_restartMode(other.m_restartMode)
+	  m_restartMode(other.m_restartMode),
+	  m_rating(other.m_rating)
 {
 	foreach (const EngineOption* option, other.options())
 		addOption(option->copy());
@@ -145,6 +154,9 @@ QVariant EngineConfiguration::toVariant() const
 		map.insert("options", optionsList);
 	}
 
+	if (m_rating)
+		map.insert("rating", m_rating);
+
 	return map;
 }
 
@@ -161,6 +173,11 @@ void EngineConfiguration::setCommand(const QString& command)
 void EngineConfiguration::setProtocol(const QString& protocol)
 {
 	m_protocol = protocol;
+}
+
+void EngineConfiguration::setRating(const int rating)
+{
+	m_rating = rating && rating > 0 ? rating : 0;
 }
 
 void EngineConfiguration::setWorkingDirectory(const QString& workingDir)
@@ -186,6 +203,11 @@ QString EngineConfiguration::workingDirectory() const
 QString EngineConfiguration::protocol() const
 {
 	return m_protocol;
+}
+
+int EngineConfiguration::rating() const
+{
+	return m_rating;
 }
 
 QStringList EngineConfiguration::arguments() const
@@ -312,6 +334,7 @@ EngineConfiguration& EngineConfiguration::operator=(const EngineConfiguration& o
 		m_whiteEvalPov = other.m_whiteEvalPov;
 		m_validateClaims = other.m_validateClaims;
 		m_restartMode = other.m_restartMode;
+		m_rating = other.m_rating;
 
 		qDeleteAll(m_options);
 		m_options.clear();

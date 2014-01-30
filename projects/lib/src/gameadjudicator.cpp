@@ -28,8 +28,10 @@ GameAdjudicator::GameAdjudicator()
 	  m_resignScore(0),
 	  m_tbEnabled(false)
 {
-	m_resignScoreCount[0] = 0;
-	m_resignScoreCount[1] = 0;
+	m_resignLoserScoreCount[0] = 0;
+	m_resignLoserScoreCount[1] = 0;
+	m_resignWinnerScoreCount[0] = 0;
+	m_resignWinnerScoreCount[1] = 0;
 }
 
 void GameAdjudicator::setDrawThreshold(int moveNumber, int moveCount, int score)
@@ -49,8 +51,10 @@ void GameAdjudicator::setResignThreshold(int moveCount, int score)
 
 	m_resignMoveCount = moveCount;
 	m_resignScore = score;
-	m_resignScoreCount[0] = 0;
-	m_resignScoreCount[1] = 0;
+	m_resignLoserScoreCount[0] = 0;
+	m_resignLoserScoreCount[1] = 0;
+	m_resignWinnerScoreCount[0] = 0;
+	m_resignWinnerScoreCount[1] = 0;
 }
 
 void GameAdjudicator::setTablebaseAdjudication(bool enable)
@@ -58,7 +62,12 @@ void GameAdjudicator::setTablebaseAdjudication(bool enable)
 	m_tbEnabled = enable;
 }
 
-void GameAdjudicator::addEval(const Chess::Board* board, const MoveEvaluation& eval)
+void GameAdjudicator::resetDrawCount()
+{
+	m_drawScoreCount = 0;
+}
+
+void GameAdjudicator::addEval(const Chess::Board* board, const MoveEvaluation& eval, bool resetDraw)
 {
 	Chess::Side side = board->sideToMove().opposite();
 
@@ -74,37 +83,53 @@ void GameAdjudicator::addEval(const Chess::Board* board, const MoveEvaluation& e
 	if (eval.depth() <= 0)
 	{
 		m_drawScoreCount = 0;
-		m_resignScoreCount[side] = 0;
+		m_resignLoserScoreCount[side] = 0;
+		m_resignWinnerScoreCount[side] = 0;
 		return;
 	}
 
 	// Draw adjudication
 	if (m_drawMoveNum > 0)
 	{
-		if (qAbs(eval.score()) <= m_drawScore)
-			m_drawScoreCount++;
-		else
+		if (resetDraw) {
 			m_drawScoreCount = 0;
-		if (board->plyCount() / 2 >= m_drawMoveNum
-		&&  m_drawScoreCount >= m_drawMoveCount * 2)
-		{
-			m_result = Chess::Result(Chess::Result::Adjudication, Chess::Side::NoSide);
-			return;
+		} else {
+			if (qAbs(eval.score()) <= m_drawScore)
+				m_drawScoreCount++;
+			else
+				m_drawScoreCount = 0;
+			if (board->plyCount() / 2 + 1 >= m_drawMoveNum
+			&&  m_drawScoreCount >= m_drawMoveCount * 2)
+			{
+				m_result = Chess::Result(Chess::Result::Adjudication, Chess::Side::NoSide, "TCEC draw rule");
+				return;
+			}
 		}
 	}
 
 	// Resign adjudication
 	if (m_resignMoveCount > 0)
 	{
-		int& count = m_resignScoreCount[side];
-		if (eval.score() <= m_resignScore)
-			count++;
-		else
-			count = 0;
+		int& loserCount = m_resignLoserScoreCount[side];
+		int& winnerCount = m_resignWinnerScoreCount[side];
 
-		if (count >= m_resignMoveCount)
-			m_result = Chess::Result(Chess::Result::Adjudication,
-						 side.opposite());
+		if (eval.score() <= m_resignScore) {
+			loserCount++;
+			winnerCount = 0;
+		} else if (eval.score() >= -m_resignScore) {
+			winnerCount++;
+			loserCount = 0;
+		} else
+			loserCount = winnerCount = 0;
+
+		// are you thinking what I'm thinking?
+		if (loserCount >= m_resignMoveCount && m_resignWinnerScoreCount[side.opposite()] >= m_resignMoveCount) {
+			side = side.opposite(); // we're losing
+		} else if (winnerCount >= m_resignMoveCount && m_resignLoserScoreCount[side.opposite()] >= m_resignMoveCount) {
+			// side = side; // we're winning
+		} else return;
+
+		m_result = Chess::Result(Chess::Result::Adjudication, side, "TCEC win rule");
 	}
 }
 
