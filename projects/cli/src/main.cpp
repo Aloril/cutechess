@@ -352,7 +352,8 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 
 	QVariantMap tfMap, tMap, eMap;
 	QVariantList eList;
-	bool wantsresume = false;
+	bool wantsResume = false;
+	bool wantsDebug = parser.takeOption("-debug").toBool();
 
 	QString tournamentFile = parser.takeOption("-tournamentfile").toString();
 	bool usingTournamentFile = false;
@@ -371,7 +372,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 			QTextStream stream(&input);
 			JsonParser jsonParser(stream);
 			tfMap = jsonParser.parse().toMap();
-			wantsresume = parser.takeOption("-resume").toBool();
+			wantsResume = parser.takeOption("-resume").toBool();
 			if (tfMap.contains("tournamentSettings"))
 				tMap = tfMap["tournamentSettings"].toMap();
 			if (tfMap.contains("engineSettings"))
@@ -398,7 +399,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 
 	// seed the generator as necessary -- it is always necessary if we're using a tournament file
 	uint srand = 0;
-	if (wantsresume && usingTournamentFile) {
+	if (wantsResume && usingTournamentFile) {
 		if (tMap.contains("srand")) {
 			srand = tMap["srand"].toUInt(); // we want to resume a tournament in progress
 		}
@@ -524,7 +525,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 		}
 
 		if (tfMap.contains("matchProgress")) {
-			if (!wantsresume) {
+			if (!wantsResume) {
 				tfMap.remove("matchProgress");
 			} else {
 				QVariantList pList;
@@ -688,9 +689,6 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				match->setRatingInterval(value.toInt());
 				tMap.insert("ratingInterval", value.toInt());
 			}
-			// Debugging mode. Prints all engine input and output.
-			else if (name == "-debug")
-				match->setDebugMode(true);
 			// Use an opening suite
 			else if (name == "-openings")
 				openingsOption = option;
@@ -803,6 +801,10 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 
 	bool ok = true;
 
+	// Debugging mode. Prints all engine input and output.
+	if (wantsDebug)
+		match->setDebugMode(true);
+
 	if (!eachOptions.isEmpty())
 	{
 		QList<EngineData>::iterator it;
@@ -872,7 +874,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 			return 0;
 		}
 
-		if (!wantsresume || !tMap.contains("eventDate")) {
+		if (!wantsResume || !tMap.contains("eventDate")) {
 			QString eventDate = QDate::currentDate().toString("yyyy.MM.dd");
 			tournament->setEventDate(eventDate);
 			tMap.insert("eventDate", eventDate);
