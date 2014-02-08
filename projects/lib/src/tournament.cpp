@@ -282,7 +282,7 @@ ChessGame* Tournament::setupBoard(PlayerData& white, PlayerData& black)
 			isRepeat = true;
 		}
 	}
-	if (!isRepeat)
+	if (m_openingSuite && !isRepeat)
 		game->setMoves(m_openingSuite->nextGame(m_openingDepth));
 
 	game->generateOpening();
