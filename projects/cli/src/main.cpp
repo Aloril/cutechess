@@ -43,6 +43,39 @@
 #include "matchparser.h"
 #include "enginematch.h"
 
+void sigintHandler(int param);
+
+#ifdef _WIN32
+extern int volatile signaled;
+#include <windows.h>
+void install_sig_hooks();
+
+BOOL WINAPI cchandler(DWORD dwType);
+BOOL WINAPI cchandler(DWORD dwType)
+{
+	switch(dwType) {
+		case CTRL_C_EVENT:
+		case CTRL_BREAK_EVENT:
+		case CTRL_CLOSE_EVENT:
+		case CTRL_LOGOFF_EVENT:
+		case CTRL_SHUTDOWN_EVENT:
+			sigintHandler(0);
+			return TRUE;
+			break;
+		default: break;
+	}
+	return FALSE;
+}
+#endif
+
+void install_sig_hooks()
+{
+#ifdef _WIN32
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE)cchandler, true);
+#else
+	signal(SIGINT, sigintHandler);
+#endif
+}
 
 static EngineMatch* match = 0;
 
@@ -862,7 +895,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 int main(int argc, char* argv[])
 {
 	setvbuf(stdout, NULL, _IONBF, 0);
-	signal(SIGINT, sigintHandler);
+	install_sig_hooks();
 
 	CuteChessCoreApplication app(argc, argv);
 
