@@ -58,7 +58,7 @@ int MoveEvaluation::time() const
 	return m_time;
 }
 
-int MoveEvaluation::nodeCount() const
+qulonglong MoveEvaluation::nodeCount() const
 {
 	return m_nodeCount;
 }
@@ -110,7 +110,7 @@ void MoveEvaluation::setTime(int time)
 	m_time = time;
 }
 
-void MoveEvaluation::setNodeCount(int nodeCount)
+void MoveEvaluation::setNodeCount(qulonglong nodeCount)
 {
 	m_nodeCount = nodeCount;
 }

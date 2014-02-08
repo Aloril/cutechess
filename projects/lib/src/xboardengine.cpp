@@ -39,7 +39,7 @@ static QString msToXboardTime(int ms)
 	QString number = QString::number(sec / 60);
 	if (sec % 60 != 0)
 		number += QString(":%1").arg(sec % 60, 2, 10, QChar('0'));
-	
+
 	return number;
 }
 
@@ -113,10 +113,10 @@ void XboardEngine::startGame()
 	m_forceMode = false;
 	m_nextMove = Chess::Move();
 	write("new");
-	
+
 	if (board()->variant() != "standard")
 		write("variant " + variantToXboard(board()->variant()));
-	
+
 	if (board()->isRandomVariant()
 	||  board()->fenString() != board()->defaultFenString())
 	{
@@ -125,7 +125,7 @@ void XboardEngine::startGame()
 		else
 			qDebug("%s doesn't support the setboard command", qPrintable(name()));
 	}
-	
+
 	// Send the time controls
 	const TimeControl* myTc = timeControl();
 	if (myTc->isInfinite())
@@ -156,7 +156,7 @@ void XboardEngine::startGame()
 	// Disable pondering
 	write("easy");
 	setForceMode(true);
-	
+
 	// Tell the opponent's type and name to the engine
 	if (m_ftName)
 	{
@@ -211,7 +211,7 @@ void XboardEngine::sendTimeLeft()
 {
 	if (!m_ftTime)
 		return;
-	
+
 	if (timeControl()->isInfinite())
 	{
 		write(QString("time %1").arg(s_infiniteSec));
@@ -498,7 +498,7 @@ void XboardEngine::setFeature(const QString& name, const QString& val)
 	{
 		write("accepted done", Unbuffered);
 		m_initTimer->stop();
-		
+
 		if (val == "1")
 			initialize();
 		return;
@@ -508,7 +508,7 @@ void XboardEngine::setFeature(const QString& name, const QString& val)
 		write("rejected " + name, Unbuffered);
 		return;
 	}
-	
+
 	write("accepted " + name, Unbuffered);
 }
 
@@ -563,7 +563,7 @@ void XboardEngine::parseLine(const QString& line)
 		bool ok = false;
 		int val = 0;
 		QStringRef ref(command);
-		
+
 		// Search depth
 		QString depth(ref.toString());
 		if (!(depth.end() - 1)->isDigit())
@@ -591,9 +591,9 @@ void XboardEngine::parseLine(const QString& line)
 		// Node count
 		if ((ref = nextToken(ref)).isNull())
 			return;
-		val = ref.toString().toInt(&ok);
+		qulonglong uval = ref.toString().toULongLong(&ok);
 		if (ok)
-			m_eval.setNodeCount(val);
+			m_eval.setNodeCount(uval);
 
 		// Principal variation
 		if ((ref = nextToken(ref, true)).isNull())
@@ -650,21 +650,21 @@ void XboardEngine::parseLine(const QString& line)
 	else if (command == "feature")
 	{
 		QRegExp rx("\\w+\\s*=\\s*(\"[^\"]*\"|\\d+)");
-		
+
 		int pos = 0;
 		QString feature;
 		QStringList list;
-		
+
 		while ((pos = rx.indexIn(args, pos)) != -1)
 		{
 			list = rx.cap().split('=');
 			if (list.count() != 2)
 				continue;
 			feature = list.at(0).trimmed();
-			
+
 			QString val = list.at(1).trimmed();
 			val.remove('\"');
-			
+
 			setFeature(feature, val);
 			pos += rx.matchedLength();
 		}

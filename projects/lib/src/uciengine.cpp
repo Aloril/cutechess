@@ -48,15 +48,15 @@ void UciEngine::startProtocol()
 void UciEngine::sendPosition()
 {
 	QString str("position");
-	
+
 	if (board()->isRandomVariant() || m_startFen != board()->defaultFenString())
 		str += QString(" fen ") + m_startFen;
 	else
 		str += " startpos";
-	
+
 	if (!m_moveStrings.isEmpty())
 		str += QString(" moves") + m_moveStrings;
-	
+
 	write(str);
 }
 
@@ -101,7 +101,7 @@ void UciEngine::startGame()
 		m_startFen = board()->fenString(Chess::Board::ShredderFen);
 	else
 		m_startFen = board()->fenString(Chess::Board::XFen);
-	
+
 	QString uciVariant(variantToUci(board()->variant()));
 	if (uciVariant != m_variantOption)
 	{
@@ -155,7 +155,7 @@ void UciEngine::startThinking()
 	}
 	else
 		qFatal("Player %s doesn't have a side", qPrintable(name()));
-	
+
 	QString command = "go";
 	if (myTc->isInfinite())
 	{
@@ -272,7 +272,7 @@ void UciEngine::parseInfo(const QVarLengthArray<QStringRef>& tokens,
 
 	if (tokens.isEmpty())
 		return;
-	
+
 	switch (type)
 	{
 	case InfoDepth:
@@ -282,7 +282,7 @@ void UciEngine::parseInfo(const QVarLengthArray<QStringRef>& tokens,
 		m_eval.setTime(tokens[0].toString().toInt());
 		break;
 	case InfoNodes:
-		m_eval.setNodeCount(tokens[0].toString().toInt());
+		m_eval.setNodeCount(tokens[0].toString().toULongLong());
 		break;
 	case InfoPv:
 		m_eval.setPv(joinTokens(tokens).toString());
@@ -386,7 +386,7 @@ EngineOption* UciEngine::parseOption(const QStringRef& line)
 	QStringList choices;
 	int min = 0;
 	int max = 0;
-	
+
 	int keyword = -1;
 	QStringRef token(nextToken(line));
 	QVarLengthArray<QStringRef> tokens;

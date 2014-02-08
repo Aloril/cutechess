@@ -38,7 +38,7 @@ class LIB_EXPORT MoveEvaluation
 
 		/*! Returns true if the evaluation is empty. */
 		bool isEmpty() const;
-		
+
 		/*! Returns true if the evaluation points to a book move. */
 		bool isBookEval() const;
 
@@ -61,7 +61,7 @@ class LIB_EXPORT MoveEvaluation
 		 * How many nodes were searched?
 		 * \note For human players this is always 0.
 		 */
-		int nodeCount() const;
+		qulonglong nodeCount() const;
 
 		/*!
 		 * The principal variation.
@@ -93,7 +93,7 @@ class LIB_EXPORT MoveEvaluation
 		void setTime(int time);
 
 		/*! Sets the node count to \a nodeCount. */
-		void setNodeCount(int nodeCount);
+		void setNodeCount(qulonglong nodeCount);
 
 		/*! Sets the principal variation to \a pv. */
 		void setPv(const QString& pv);
@@ -109,7 +109,7 @@ class LIB_EXPORT MoveEvaluation
 		int m_depth;
 		int m_score;
 		int m_time;
-		int m_nodeCount;
+		qulonglong m_nodeCount;
 		int m_nps;
 		int m_tbHits;
 		QString m_pv;
