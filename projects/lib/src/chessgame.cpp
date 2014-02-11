@@ -718,19 +718,22 @@ void ChessGame::initializePgn()
 	}
 
 	// this is a hack, but it works
+	QString engineOptions;
 	if (!m_player[Chess::Side::White]->isHuman()) {
 		ChessEngine *engine = dynamic_cast<ChessEngine *>(m_player[Chess::Side::White]);
 		if (engine) {
-			m_pgn->setTag("WhiteEngineOptions", engine->configurationString());
+			engineOptions += QString("WhiteEngineOptions: %1").arg(engine->configurationString());
 		}
 	}
 
 	if (!m_player[Chess::Side::Black]->isHuman()) {
 		ChessEngine *engine = dynamic_cast<ChessEngine *>(m_player[Chess::Side::Black]);
 		if (engine) {
-			m_pgn->setTag("BlackEngineOptions", engine->configurationString());
+			if (!engineOptions.isEmpty()) engineOptions += ", ";
+			engineOptions += QString("BlackEngineOptions: %1").arg(engine->configurationString());
 		}
 	}
+	m_pgn->setGameComment(engineOptions);
 }
 
 void ChessGame::startGame()

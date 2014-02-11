@@ -175,6 +175,8 @@ class LIB_EXPORT PgnGame
 		void setStartingSide(Chess::Side side);
 		/*! Sets the starting position's FEN string. */
 		void setStartingFenString(Chess::Side side, const QString& fen);
+		/*! Sets a comment before the moves begin. */
+		void setGameComment(const QString& comment);
 		/*!
 		 * Sets a description for the result.
 		 *
@@ -206,6 +208,7 @@ class LIB_EXPORT PgnGame
 		QVector<MoveData> m_moves;
 		QObject* m_tagReceiver;
 		bool m_wantsEcoClassification;
+		QString m_gameComment;
 };
 
 /*! Reads a PGN game from a PGN stream. */
