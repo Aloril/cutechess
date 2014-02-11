@@ -20,6 +20,7 @@
 #include <QFile>
 #include <QMetaObject>
 #include <QProcess>
+#include <QTextCodec>
 #include "board/boardfactory.h"
 #include "econode.h"
 #include "pgnstream.h"
@@ -377,6 +378,7 @@ bool PgnGame::write(const QString& filename, PgnMode mode) const
 		return false;
 
 	QTextStream out(&file);
+	out.setCodec(QTextCodec::codecForName("latin1"));
 	write(out, mode);
 	return true;
 }

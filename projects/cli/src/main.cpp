@@ -23,6 +23,7 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QFile>
+#include <QTextCodec>
 
 #include <mersenne.h>
 #include <enginemanager.h>
@@ -900,6 +901,9 @@ int main(int argc, char* argv[])
 	install_sig_hooks();
 
 	CuteChessCoreApplication app(argc, argv);
+
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("latin1"));
+	QTextCodec::setCodecForTr(QTextCodec::codecForName("latin1"));
 
 	QStringList arguments = CuteChessCoreApplication::arguments();
 	arguments.takeFirst(); // application name
