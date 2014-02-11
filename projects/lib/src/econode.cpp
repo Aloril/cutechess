@@ -23,6 +23,16 @@
 #include "pgngame.h"
 #include "pgnstream.h"
 
+EcoInfo::EcoInfo(const QString& ecoCode, const QString& opening, const QString& variation) :
+m_ecoCode(ecoCode),
+m_opening(opening),
+m_variation(variation)
+{
+	;
+}
+
+/////////////////////////////////////////////////////////
+
 static QStringList s_openings;
 static EcoNode* s_root = 0;
 

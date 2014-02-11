@@ -29,7 +29,6 @@
 #include <gamemanager.h>
 #include <sprt.h>
 
-
 EngineMatch::EngineMatch(Tournament* tournament, QObject* parent)
 	: QObject(parent),
 	  m_tournament(tournament),
@@ -511,12 +510,14 @@ void EngineMatch::onGameFinished(ChessGame* game, int number)
 				pMap.insert("terminationDetails", result.shortDescription());
 				PgnGame *pgn = game->pgn();
 				if (pgn) {
-					const EcoNode *eco = pgn->eco();
-					if (eco) {
-						pMap.insert("ECO", eco->ecoCode());
-						pMap.insert("opening", eco->opening());
-						pMap.insert("variation", eco->variation());
-					}
+					const EcoInfo eco = pgn->eco();
+					QString val;
+					val = eco.ecoCode();
+					if (!val.isEmpty()) pMap.insert("ECO", val);
+					val = eco.opening();
+					if (!val.isEmpty()) pMap.insert("opening", val);
+					val = eco.variation();
+					if (!val.isEmpty()) pMap.insert("variation", val);
 					pMap.insert("plyCount", game->moves().size() / 2 + 1);
 				}
 				pMap.insert("finalFen", game->board()->fenString());

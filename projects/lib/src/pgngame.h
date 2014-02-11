@@ -192,18 +192,20 @@ class LIB_EXPORT PgnGame
 		 */
 		void setTagReceiver(QObject* receiver);
 
-		/*! Returns the ECO information for this game */
-		const EcoNode *eco();
+		void setWantsEcoClassification(bool wants);
+		/*! Use pgn-extract to derive ECO info for this game */
+		void classifyEco();
+		/*! Returns the ECO information for this game, if available */
+		const struct EcoInfo eco() const;
 
 	private:
 		bool parseMove(PgnStream& in);
 
 		Chess::Side m_startingSide;
-		const EcoNode* m_eco;
-		const EcoNode* m_lastEco;
 		QMap<QString, QString> m_tags;
 		QVector<MoveData> m_moves;
 		QObject* m_tagReceiver;
+		bool m_wantsEcoClassification;
 };
 
 /*! Reads a PGN game from a PGN stream. */

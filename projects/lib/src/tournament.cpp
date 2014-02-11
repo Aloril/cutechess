@@ -328,6 +328,7 @@ void Tournament::startNextGame()
 	connect(game, SIGNAL(pgnMove()),
 		this, SLOT(onPgnMove()));
 
+	game->pgn()->setWantsEcoClassification(true);
 	game->pgn()->setEvent(m_name);
 	game->pgn()->setSite(m_site);
 	game->pgn()->setRound(m_round);

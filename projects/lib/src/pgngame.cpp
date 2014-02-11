@@ -19,6 +19,7 @@
 #include <QStringList>
 #include <QFile>
 #include <QMetaObject>
+#include <QProcess>
 #include "board/boardfactory.h"
 #include "econode.h"
 #include "pgnstream.h"
@@ -38,9 +39,8 @@ QTextStream& operator<<(QTextStream& out, const PgnGame& game)
 
 PgnGame::PgnGame()
 	: m_startingSide(Chess::Side::White),
-	  m_eco(EcoNode::root()),
-	  m_lastEco(EcoNode::root()),
-	  m_tagReceiver(0)
+	  m_tagReceiver(0),
+	  m_wantsEcoClassification(false)
 {
 }
 
@@ -52,8 +52,6 @@ bool PgnGame::isNull() const
 void PgnGame::clear()
 {
 	m_startingSide = Chess::Side();
-	m_eco = EcoNode::root();
-	m_lastEco = m_eco;
 	m_tags.clear();
 	m_moves.clear();
 }
@@ -89,23 +87,70 @@ const QVector<PgnGame::MoveData>& PgnGame::moves() const
 	return m_moves;
 }
 
+#define ECO_MOVES	(18)
+#define ECO_PLIES  	(ECO_MOVES * 2)
+
+void PgnGame::classifyEco()
+{
+	write("_pxtmpi.pgn");
+
+    QString program = "./pgn-extract";
+#ifdef _WIN32
+	program += ".exe";
+#endif
+
+    QStringList arguments;
+    arguments
+		<< "-e"
+		// << "-l_pxtlog.txt"
+		<< "-o_pxtmpo.pgn"
+		<< "_pxtmpi.pgn";
+
+    QProcess *pxt = new QProcess();
+	if (pxt) {
+	    pxt->start(program, arguments);
+		pxt->waitForFinished();
+
+		QFile *tmpOut = new QFile("_pxtmpo.pgn");
+		if (!tmpOut->open(QIODevice::ReadOnly | QIODevice::Text)) {
+		        qWarning("Can't open live PGN _pxtmpo.pgn");
+		        delete tmpOut;
+		        return;
+		}
+		PgnStream pgnStream(tmpOut);
+		PgnGame pgnGame;
+		pgnGame.read(pgnStream);
+		delete tmpOut;
+
+		QString val;
+		val = pgnGame.tagValue("ECO");
+		if (!val.isEmpty()) setTag("ECO", val);
+		val = pgnGame.tagValue("Opening");
+		if (!val.isEmpty()) setTag("Opening", val);
+		val = pgnGame.tagValue("Variation");
+		if (!val.isEmpty()) setTag("Variation", val);
+
+		QFile::remove(QString("_pxtmpo.pgn"));
+		delete pxt;
+	}
+	QFile::remove(QString("_pxtmpi.pgn"));
+}
+
 void PgnGame::addMove(const MoveData& data)
 {
 	m_moves.append(data);
-
-	m_eco = (m_eco && isStandard()) ? m_eco->child(data.moveString) : 0;
-	if (m_eco && m_eco->isLeaf())
-	{
-		setTag("ECO", m_eco->ecoCode());
-		setTag("Opening", m_eco->opening());
-		setTag("Variation", m_eco->variation());
-		m_lastEco = m_eco;
-	}
+	if (m_wantsEcoClassification && m_moves.size() <= ECO_PLIES)
+		classifyEco();
 }
 
-const EcoNode *PgnGame::eco()
+void PgnGame::setWantsEcoClassification(bool wants)
 {
-	return m_lastEco;
+	m_wantsEcoClassification = wants;
+}
+
+const EcoInfo PgnGame::eco() const
+{
+	return EcoInfo(tagValue("ECO"), tagValue("Opening"), tagValue("Variation"));
 }
 
 Chess::Board* PgnGame::createBoard() const

@@ -24,6 +24,21 @@
 class QDataStream;
 class PgnStream;
 
+struct EcoInfo
+{
+	public:
+		EcoInfo(const QString& ecoCode, const QString& opening, const QString& variation);
+
+		QString ecoCode() const { return m_ecoCode; }
+		QString opening() const { return m_opening; }
+		QString variation() const { return m_variation; }
+
+	private:
+		QString m_ecoCode;
+		QString m_opening;
+		QString m_variation;
+};
+
 /*!
  * \brief A node in the ECO tree (Encyclopaedia of Chess Openings)
  *
