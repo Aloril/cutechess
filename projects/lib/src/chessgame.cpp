@@ -217,7 +217,7 @@ static QString evalString(ChessGame *game, const MoveEvaluation& eval)
 		// str += sScore + ",";
 	}
 
-	str += " d=";
+	str += "d=";
 	if (eval.depth() > 0) {
 		str += QString::number(eval.depth());
 	} else {
@@ -295,7 +295,7 @@ static QString evalString(ChessGame *game, const MoveEvaluation& eval)
 		str += sScore;
 	}
 
-	str += ", ";
+	str += ",";
 #else
 	if (eval.depth() > 0)
 	{

@@ -329,7 +329,7 @@ void PgnGame::write(QTextStream& out, PgnMode mode) const
 	int side = m_startingSide;
 
 	if (!m_gameComment.isEmpty()) {
-		str = QString("{%1}").arg(m_gameComment);
+		str = QString("{ %1 }").arg(m_gameComment);
 		out << "\n" << str;
 	}
 
@@ -345,7 +345,7 @@ void PgnGame::write(QTextStream& out, PgnMode mode) const
 
 		str += data.moveString;
 		if (mode == Verbose && !data.comment.isEmpty())
-			str += QString(" {%1}").arg(data.comment);
+			str += QString(" { %1 }").arg(data.comment);
 
 		// Limit the lines to 80 characters
 		if (lineLength == 0 || lineLength + str.size() >= 80)
