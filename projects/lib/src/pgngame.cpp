@@ -25,6 +25,8 @@
 #include "econode.h"
 #include "pgnstream.h"
 
+static QProcess *s_pxt = NULL;
+
 PgnStream& operator>>(PgnStream& in, PgnGame& game)
 {
 	game.read(in);
@@ -36,7 +38,6 @@ QTextStream& operator<<(QTextStream& out, const PgnGame& game)
 	game.write(out);
 	return out;
 }
-
 
 PgnGame::PgnGame()
 	: m_startingSide(Chess::Side::White),
@@ -93,48 +94,49 @@ const QVector<PgnGame::MoveData>& PgnGame::moves() const
 
 void PgnGame::classifyEco()
 {
-	write("_pxtmpi.pgn");
+	QString pgnText;
 
-    QString program = "./pgn-extract";
-#ifdef _WIN32
-	program += ".exe";
-#endif
+	if (!s_pxt || s_pxt->state() == QProcess::NotRunning) {
+	    QString program = "./pgn-extract";
+	#ifdef _WIN32
+		program += ".exe";
+	#endif
 
-    QStringList arguments;
-    arguments
-		<< "-e"
-		// << "-l_pxtlog.txt"
-		<< "-o_pxtmpo.pgn"
-		<< "_pxtmpi.pgn";
+	    QStringList arguments;
+	    arguments
+			<< "-e"
+			<< "-s";
+			// << "-l_pxtlog.txt"
+			// << "-o_pxtmpo.pgn"
+			// << "_pxtmpi.pgn";
 
-    QProcess *pxt = new QProcess();
-	if (pxt) {
-	    pxt->start(program, arguments);
-		pxt->waitForFinished();
-
-		QFile *tmpOut = new QFile("_pxtmpo.pgn");
-		if (!tmpOut->open(QIODevice::ReadOnly | QIODevice::Text)) {
-		        qWarning("Can't open live PGN _pxtmpo.pgn");
-		        delete tmpOut;
-		        return;
-		}
-		PgnStream pgnStream(tmpOut);
-		PgnGame pgnGame;
-		pgnGame.read(pgnStream);
-		delete tmpOut;
-
-		QString val;
-		val = pgnGame.tagValue("ECO");
-		if (!val.isEmpty()) setTag("ECO", val);
-		val = pgnGame.tagValue("Opening");
-		if (!val.isEmpty()) setTag("Opening", val);
-		val = pgnGame.tagValue("Variation");
-		if (!val.isEmpty()) setTag("Variation", val);
-
-		QFile::remove(QString("_pxtmpo.pgn"));
-		delete pxt;
+		if (!s_pxt)
+			s_pxt = new QProcess();
+	    s_pxt->start(program, arguments);
+		s_pxt->waitForStarted();
 	}
-	QFile::remove(QString("_pxtmpi.pgn"));
+
+	QTextStream outstream(&pgnText);
+	write(outstream);
+	outstream.flush();
+
+	QByteArray pgnData = pgnText.toLocal8Bit();
+	s_pxt->write(pgnData);
+
+	s_pxt->waitForReadyRead();
+	pgnData = s_pxt->readAllStandardOutput();
+
+	PgnStream pgnStream(&pgnData);
+	PgnGame pgnGame;
+	pgnGame.read(pgnStream);
+
+	QString val;
+	val = pgnGame.tagValue("ECO");
+	if (!val.isEmpty()) setTag("ECO", val);
+	val = pgnGame.tagValue("Opening");
+	if (!val.isEmpty()) setTag("Opening", val);
+	val = pgnGame.tagValue("Variation");
+	if (!val.isEmpty()) setTag("Variation", val);
 }
 
 void PgnGame::addMove(const MoveData& data)
