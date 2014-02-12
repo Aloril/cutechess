@@ -20,6 +20,7 @@
 #include <QRegExp>
 #include "pipereader_win.h"
 
+static HANDLE sJob = NULL;
 
 EngineProcess::EngineProcess(QObject* parent)
 	: QIODevice(parent),
@@ -31,6 +32,17 @@ EngineProcess::EngineProcess(QObject* parent)
 	  m_outRead(INVALID_HANDLE_VALUE),
 	  m_reader(0)
 {
+	if (!sJob) {
+		sJob = CreateJobObject(NULL, NULL);
+		JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
+
+		memset(&jeli, 0, sizeof(JOBOBJECT_EXTENDED_LIMIT_INFORMATION));
+
+		// Configure all child processes associated with the job to terminate when the
+		jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+		SetInformationJobObject( sJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
+
+	}
 }
 
 EngineProcess::~EngineProcess()
@@ -226,6 +238,8 @@ void EngineProcess::start(const QString& program,
 	m_started = (bool)ok;
 	if (ok)
 	{
+		AssignProcessToJobObject(sJob, m_processInfo.hProcess);
+		CloseHandle(m_processInfo.hThread);
 		// Close the child process' ends of the pipes to make sure
 		// that ReadFile and WriteFile will return when the child
 		// terminates and closes its pipes
