@@ -22,7 +22,8 @@
 RoundRobinTournament::RoundRobinTournament(GameManager* gameManager,
 					   QObject *parent)
 	: Tournament(gameManager, parent),
-	  m_pairNumber(0)
+	  m_pairNumber(0),
+	  m_bergerPtr(0)
 {
 }
 
@@ -31,59 +32,103 @@ QString RoundRobinTournament::type() const
 	return "round-robin";
 }
 
-QList< QPair<QString, QString> > RoundRobinTournament::getPairings() const
+QList< QPair<QString, QString> > RoundRobinTournament::getPairings()
 {
-	int pCount = playerCount() + (playerCount() % 2);
-	QList<int> topHalf;
-	QList<int> bottomHalf;
+	int count = playerCount() + (playerCount() % 2);
+	int roundsPerCycle = gamesPerCycle() / (count / 2);
+	QList<int> bergerTable;
+	QMap<QString, QPair<int, int> > WBmap;
+	QString ls;
+	bool wantsDebug = false;
 
-	for (int i = 0; i < pCount / 2; i++)
-		topHalf.append(i);
-	for (int i = pCount - 1; i >= pCount / 2; i--)
-		bottomHalf.append(i);
+	initializePairing(bergerTable);
 
-	int pairNumber = 0;
-	int currentRound = 1;
-	int count = finalGameCount();
+	if (wantsDebug) {
+		ls.clear();
+		for(int i = 0; i < bergerTable.size(); i++) {
+			if (i) ls += " ";
+			ls += QString::number(bergerTable[i]);
+		}
+		qDebug("%s", qPrintable(ls));
+	}
+
+	int bergerPtr = 0;
 	int gameNumber = 0;
+	int currentRound = 1;
 	QList< QPair<QString, QString> > pList;
 
-	while (gameNumber < count) {
-		if (pairNumber >= topHalf.size()) {
-			pairNumber = 0;
+	if (wantsDebug)
+		qDebug("Round %d", currentRound);
+
+	while(gameNumber < finalGameCount()) {
+		if (bergerPtr >= bergerTable.size()) {
+			for (int i = 0; i < count; i++) {
+				if (bergerTable[i] == count - 1) ;
+				else bergerTable[i] = (bergerTable[i] + (count / 2)) % (count - 1);
+			}
+			bergerPtr = 0;
 			currentRound++;
-			topHalf.insert(1, bottomHalf.takeFirst());
-			bottomHalf.append(topHalf.takeLast());
+			bergerTable.insert(!(((currentRound - 1) % roundsPerCycle) % 2), bergerTable.takeAt(bergerTable.indexOf(count - 1)));
+			if (wantsDebug) {
+				qDebug("Round %d", currentRound);
+				ls.clear();
+				for(int i = 0; i < bergerTable.size(); i++) {
+					if (i) ls += " ";
+					ls += QString::number(bergerTable[i]);
+				}
+				qDebug("%s", qPrintable(ls));
+			}
 		}
-		int white = topHalf.at(pairNumber);
-		int black = bottomHalf.at(pairNumber);
+		int white = bergerTable[bergerPtr++];
+		int black = bergerTable[bergerPtr++];
 
-		if (currentRound % 2 == 0)
+		if ((gameNumber / gamesPerCycle()) % 2)
 			qSwap(white, black);
-
-		pairNumber++;
 
 		if (white < playerCount() && black < playerCount()) {
 			pList.append(qMakePair(playerAt(white).builder->name(), playerAt(black).builder->name()));
+
+			if (wantsDebug) {
+				int wW, wB;
+				int bW, bB;
+				QPair<int, int>& thisPair = WBmap[playerAt(white).builder->name()];
+				thisPair.first++;
+				wW = thisPair.first;
+				wB = thisPair.second;
+				QPair<int, int>& thatPair = WBmap[playerAt(black).builder->name()];
+				thatPair.second++;
+				bW = thatPair.first;
+				bB = thatPair.second;
+				qDebug("%s (%dW %dB) - %s (%dW %dB)", qPrintable(playerAt(white).builder->name()), wW, wB, qPrintable(playerAt(black).builder->name()), bW, bB);
+			}
 			gameNumber++;
+		} else {
+			// what about byes? cutechess doesn't usually count them
 		}
-		else
-			; // don't count byes
 	}
+	//exit(0);
 	return pList;
 }
 
 void RoundRobinTournament::initializePairing()
 {
 	m_pairNumber = 0;
-	m_topHalf.clear();
-	m_bottomHalf.clear();
+	m_bergerPtr = 0;
+	initializePairing(m_bergerTable);
+}
+
+void RoundRobinTournament::initializePairing(QList<int>& bergerTable)
+{
 	int count = playerCount() + (playerCount() % 2);
 
+	bergerTable.clear();
+	bergerTable.reserve(count);
+	for (int i  = 0; i < count; i++)
+		bergerTable.append(0);
 	for (int i = 0; i < count / 2; i++)
-		m_topHalf.append(i);
+		bergerTable[i * 2] = i;
 	for (int i = count - 1; i >= count / 2; i--)
-		m_bottomHalf.append(i);
+		bergerTable[((count - i) * 2) - 1] = i;
 }
 
 int RoundRobinTournament::gamesPerCycle() const
@@ -93,29 +138,32 @@ int RoundRobinTournament::gamesPerCycle() const
 
 QPair<int, int> RoundRobinTournament::nextPair()
 {
-	if (m_pairNumber >= m_topHalf.size())
-	{
-		m_pairNumber = 0;
+	int count = playerCount() + (playerCount() % 2);
+	int roundsPerCycle = gamesPerCycle() / (count / 2);
+
+	if (m_bergerPtr >= m_bergerTable.size()) {
+		for (int i = 0; i < count; i++) {
+			if (m_bergerTable[i] == count - 1) ;
+			else m_bergerTable[i] = (m_bergerTable[i] + (count / 2)) % (count - 1);
+		}
+		m_bergerPtr = 0;
 		setCurrentRound(currentRound() + 1);
-		m_topHalf.insert(1, m_bottomHalf.takeFirst());
-		m_bottomHalf.append(m_topHalf.takeLast());
+		m_bergerTable.insert(!(((currentRound() - 1) % roundsPerCycle) % 2), m_bergerTable.takeAt(m_bergerTable.indexOf(count - 1)));
 	}
 
-	int white = m_topHalf.at(m_pairNumber);
-	int black = m_bottomHalf.at(m_pairNumber);
+	int white = m_bergerTable[m_bergerPtr++];
+	int black = m_bergerTable[m_bergerPtr++];
 
-	// Alternate colors between rounds to make it fair
-	if (currentRound() % 2 == 0)
+	if ((m_pairNumber / gamesPerCycle()) % 2)
 		qSwap(white, black);
-
-	m_pairNumber++;
 
 	// If 'white' or 'black' equals 'playerCount()' it means
 	// that it's a "bye" player, that is an empty player that
 	// makes the pairings easier to organize. In that case
 	// no game is played and we skip to the next pair.
-	if (white < playerCount() && black < playerCount())
+	if (white < playerCount() && black < playerCount()) {
+		m_pairNumber++;
 		return qMakePair(white, black);
-	else
+	} else
 		return nextPair();
 }

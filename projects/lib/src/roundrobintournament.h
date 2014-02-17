@@ -37,7 +37,7 @@ class LIB_EXPORT RoundRobinTournament : public Tournament
 					      QObject *parent = 0);
 		// Inherited from Tournament
 		virtual QString type() const;
-		QList< QPair<QString, QString> > getPairings() const;
+		QList< QPair<QString, QString> > getPairings();
 
 	protected:
 		// Inherited from Tournament
@@ -46,9 +46,11 @@ class LIB_EXPORT RoundRobinTournament : public Tournament
 		virtual QPair<int, int> nextPair();
 
 	private:
+		void initializePairing(QList<int>& bergerTable);
+
 		int m_pairNumber;
-		QList<int> m_topHalf;
-		QList<int> m_bottomHalf;
+		QList<int> m_bergerTable;
+		int m_bergerPtr;
 };
 
 #endif // ROUNDROBINTOURNAMENT_H

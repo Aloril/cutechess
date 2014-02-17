@@ -80,7 +80,7 @@ class LIB_EXPORT Tournament : public QObject
 		/*! Returns the tournament type (eg. "round-robin" or "gauntlet"). */
 		virtual QString type() const = 0;
 		/*! Returns a list of all pairings (by player name) for this tournament. */
-		virtual QList< QPair<QString, QString> > getPairings() const = 0;
+		virtual QList< QPair<QString, QString> > getPairings() = 0;
 		/*! Returns the GameManager that manages the tournament's games. */
 		GameManager* gameManager() const;
 		/*! Returns true if the tournament is finished; otherwise returns false. */
