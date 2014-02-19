@@ -364,22 +364,24 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 			tournamentFile.append(".json");
 		if (QFile::exists(tournamentFile)) {
 			QFile input(tournamentFile);
-			if (!input.open(QIODevice::ReadOnly | QIODevice::Text))
-			{
+			if (!input.open(QIODevice::ReadOnly | QIODevice::Text)) {
 				qWarning("cannot open tournament configuration file: %s", qPrintable(tournamentFile));
 				return 0;
 			}
 
 			QTextStream stream(&input);
 			JsonParser jsonParser(stream);
-			tfMap = jsonParser.parse().toMap();
+			// we don't want to use the tournament file at all unless wantResume == true
 			wantsResume = parser.takeOption("-resume").toBool();
-			if (tfMap.contains("tournamentSettings"))
-				tMap = tfMap["tournamentSettings"].toMap();
-			if (tfMap.contains("engineSettings"))
-				eMap = tfMap["engineSettings"].toMap();
-			if (!(tMap.isEmpty() || eMap.isEmpty()))
-				usingTournamentFile = true;
+			if (wantsResume) {
+				tfMap = jsonParser.parse().toMap();
+				if (tfMap.contains("tournamentSettings"))
+					tMap = tfMap["tournamentSettings"].toMap();
+				if (tfMap.contains("engineSettings"))
+					eMap = tfMap["engineSettings"].toMap();
+				if (!(tMap.isEmpty() || eMap.isEmpty()))
+					usingTournamentFile = true;
+			}
 		}
 	}
 
@@ -388,19 +390,18 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 		ttype = tfMap["tournamentType"].toString();
 	 else
 		ttype = parser.takeOption("-tournament").toString();
-
 	if (ttype.isEmpty())
 		ttype = "round-robin";
+
 	Tournament* tournament = TournamentFactory::create(ttype, manager, parent);
-	if (tournament == 0)
-	{
+	if (tournament == 0) {
 		qWarning("Invalid tournament type: %s", qPrintable(ttype));
 		return 0;
 	}
 
 	// seed the generator as necessary -- it is always necessary if we're using a tournament file
 	uint srand = 0;
-	if (wantsResume && usingTournamentFile) {
+	if (wantsResume) {
 		if (tMap.contains("srand")) {
 			srand = tMap["srand"].toUInt(); // we want to resume a tournament in progress
 		}
@@ -433,7 +434,6 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 	QString gtbpaths;
 	QList<EngineData> engines;
 	QStringList eachOptions;
-	bool shouldparseoptions = true;
 
 	if (usingTournamentFile) {
 		if (tMap.contains("gamesPerEncounter"))
@@ -532,7 +532,6 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				QVariantList pList;
 				int nextGame = 0;
 
-				shouldparseoptions = false;
 				pList = tfMap["matchProgress"].toList();
 				QVariantList::iterator p;
 				for (p = pList.begin(); p != pList.end(); ++p) {
@@ -549,20 +548,16 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				}
 			}
 		}
-	}
-
-	if (shouldparseoptions) {
+	} else { // !usingTournamentFile
 		eList.clear();
-		foreach (const MatchParser::Option& option, parser.options())
-		{
+		foreach (const MatchParser::Option& option, parser.options()) {
 			bool ok = true;
 			const QString& name = option.name;
 			const QVariant& value = option.value;
 			Q_ASSERT(!value.isNull());
 
 			// Chess engine
-			if (name == "-engine")
-			{
+			if (name == "-engine") {
 				EngineData engine;
 				engine.bookDepth = 1000;
 				ok = parseEngine(value.toStringList(), engine);
@@ -579,16 +574,14 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				eMap.insert("each", value.toStringList());
 			}
 			// Chess variant (default: standard chess)
-			else if (name == "-variant")
-			{
+			else if (name == "-variant") {
 				ok = Chess::BoardFactory::variants().contains(value.toString());
 				if (ok) {
 					tournament->setVariant(value.toString());
 					tMap.insert("variant", value.toString());
 				}
 			}
-			else if (name == "-concurrency")
-			{
+			else if (name == "-concurrency") {
 				ok = value.toInt() > 0;
 				if (ok) {
 					manager->setConcurrency(value.toInt());
@@ -596,8 +589,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				}
 			}
 			// Threshold for draw adjudication
-			else if (name == "-draw")
-			{
+			else if (name == "-draw") {
 				QMap<QString, QString> params =
 					option.toMap("movenumber|movecount|score");
 				bool numOk = false;
@@ -618,8 +610,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				}
 			}
 			// Threshold for resign adjudication
-			else if (name == "-resign")
-			{
+			else if (name == "-resign") {
 				QMap<QString, QString> params = option.toMap("movecount|score");
 				bool countOk = false;
 				bool scoreOk = false;
@@ -647,8 +638,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				tMap.insert("name", value.toString());
 			}
 			// Number of games per encounter
-			else if (name == "-games")
-			{
+			else if (name == "-games") {
 				ok = value.toInt() > 0;
 				if (ok) {
 					tournament->setGamesPerEncounter(value.toInt());
@@ -656,8 +646,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				}
 			}
 			// Multiplier for the number of tournament rounds
-			else if (name == "-rounds")
-			{
+			else if (name == "-rounds") {
 				ok = value.toInt() > 0;
 				if (ok) {
 					tournament->setRoundMultiplier(value.toInt());
@@ -665,8 +654,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				}
 			}
 			// SPRT-based stopping rule
-			else if (name == "-sprt")
-			{
+			else if (name == "-sprt") {
 				QMap<QString, QString> params = option.toMap("elo0|elo1|alpha|beta");
 				bool sprtOk[4];
 				double elo0 = params["elo0"].toDouble(sprtOk);
@@ -694,12 +682,10 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 			else if (name == "-openings")
 				openingsOption = option;
 			// PGN file where the games should be saved
-			else if (name == "-pgnout")
-			{
+			else if (name == "-pgnout") {
 				PgnGame::PgnMode mode = PgnGame::Verbose;
 				QStringList list = value.toStringList();
-				if (list.size() == 2)
-				{
+				if (list.size() == 2) {
 					if (list.at(1) == "min")
 						mode = PgnGame::Minimal;
 					else
@@ -711,12 +697,10 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 					tMap.insert("pgnOutMode", mode);
 				}
 			}
-			else if (name == "-livepgnout")
-			{
+			else if (name == "-livepgnout") {
 				PgnGame::PgnMode mode = PgnGame::Verbose;
 				QStringList list = value.toStringList();
-				if (list.size() == 2)
-				{
+				if (list.size() == 2) {
 					if (list.at(1) == "min")
 						mode = PgnGame::Minimal;
 					else
@@ -744,8 +728,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				tMap.insert("site", value.toString());
 			}
 			// Delay between games
-			else if (name == "-wait")
-			{
+			else if (name == "-wait") {
 				ok = value.toInt() >= 0;
 				if (ok) {
 					tournament->setStartDelay(value.toInt());
@@ -761,14 +744,12 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 			else
 				qFatal("Unknown argument: \"%s\"", qPrintable(name));
 
-			if (!ok)
-			{
+			if (!ok) {
 				// Empty values default to boolean type
 				if (value.isValid() && value.type() == QVariant::Bool)
 					qWarning("Empty value for option \"%s\"",
 						 qPrintable(name));
-				else
-				{
+				else {
 					QString val;
 					if (value.type() == QVariant::StringList)
 						val = value.toStringList().join(" ");
@@ -806,8 +787,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 	if (wantsDebug)
 		match->setDebugMode(true);
 
-	if (!eachOptions.isEmpty())
-	{
+	if (!eachOptions.isEmpty()) {
 		QList<EngineData>::iterator it;
 		for (it = engines.begin(); it != engines.end(); ++it)
 		{
@@ -817,24 +797,20 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 		}
 	}
 
-	foreach (const EngineData& engine, engines)
-	{
-		if (!engine.tc.isValid())
-		{
+	foreach (const EngineData& engine, engines) {
+		if (!engine.tc.isValid()) {
 			ok = false;
 			qWarning("Invalid or missing time control");
 			break;
 		}
 
-		if (engine.config.command().isEmpty())
-		{
+		if (engine.config.command().isEmpty()) {
 			ok = false;
 			qCritical("missing chess engine command");
 			break;
 		}
 
-		if (engine.config.protocol().isEmpty())
-		{
+		if (engine.config.protocol().isEmpty()) {
 			ok = false;
 			qWarning("Missing chess protocol");
 			break;
@@ -854,14 +830,12 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 		}
 	}
 
-	if (engines.size() < 2)
-	{
+	if (engines.size() < 2) {
 		qWarning("At least two engines are needed");
 		ok = false;
 	}
 
-	if (!ok)
-	{
+	if (!ok) {
 		delete match;
 		delete tournament;
 		return 0;
@@ -869,8 +843,7 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 
 	if (!tournamentFile.isEmpty() && !tMap.isEmpty()) {
 		QFile output(tournamentFile);
-		if (!output.open(QIODevice::WriteOnly | QIODevice::Text))
-		{
+		if (!output.open(QIODevice::WriteOnly | QIODevice::Text)) {
 			qWarning("cannot open tournament configuration file: %s", qPrintable(tournamentFile));
 			return 0;
 		}
