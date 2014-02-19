@@ -286,7 +286,7 @@ static QString evalString(ChessGame *game, const MoveEvaluation& eval)
 	// eval from white's perspective 'wv'
 	Chess::Side side = game->board()->sideToMove();
 	str += ", wv=";
-	if (side == Chess::Side::Black) {
+	if (side == Chess::Side::Black && sScore != "0.00") {
 		if (sScore[0] == '-')
 			str += sScore.right(sScore.length() - 1);
 		else
