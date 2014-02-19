@@ -293,9 +293,9 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 
 		int n = 1;
 		QString abbrev;
-		abbrev.append(ctd.m_engineName.at(0).toUpper()).append(ctd.m_engineName.at(n).toLower());
+		abbrev.append(ctd.m_engineName.at(0).toUpper()).append(ctd.m_engineName.length() > n ? ctd.m_engineName.at(n++).toLower() : ' ');
 		while (abbrevList.contains(abbrev)) {
-			abbrev[1] = ctd.m_engineName.at(++n).toLower();
+			abbrev[1] = ctd.m_engineName.length() > n ? ctd.m_engineName.at(n++).toLower() : ' ';
 		}
 		ctd.m_engineAbbrev = abbrev;
 		abbrevList.append(abbrev);
@@ -335,7 +335,6 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 			if (blackDataString.length() > roundLength) roundLength = blackDataString.length();
 		}
 	}
-
 	// calculate SB
 	QMapIterator<QString, CrossTableData> ct(ctMap);
 	double largestSB = 0;
@@ -358,6 +357,42 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 		if (ctd.m_score > largestScore) largestScore = ctd.m_score;
 	}
 
+	if (playerCount == 2) {
+		roundLength = 2;
+		QVariantMap pMap = pList.at(0).toMap();
+		if (pMap.contains("white") && pMap.contains("black")) {
+			QString whiteName = pMap["white"].toString();
+			QString blackName = pMap["black"].toString();
+			CrossTableData& whiteData = ctMap[whiteName];
+			CrossTableData& blackData = ctMap[blackName];
+			QString& whiteDataString = whiteData.m_tableData[blackName];
+			QString& blackDataString = blackData.m_tableData[whiteName];
+			int whiteWin = 0;
+			int whiteLose = 0;
+			int whiteDraw = 0;
+
+			for (int i = 0; i < whiteDataString.length(); i++) {
+				if (whiteDataString[i] == '1')
+					whiteWin++;
+				else if (whiteDataString[i] == '0')
+					whiteLose++;
+				else
+					whiteDraw++;
+			}
+			whiteDataString = QString("+ %1 = %2 - %3")
+				.arg(whiteWin)
+				.arg(whiteDraw)
+				.arg(whiteLose);
+			blackDataString = QString("+ %1 = %2 - %3")
+				.arg(whiteLose)
+				.arg(whiteDraw)
+				.arg(whiteWin);
+
+			if (whiteDataString.length() > roundLength) roundLength = whiteDataString.length();
+			if (blackDataString.length() > roundLength) roundLength = blackDataString.length();
+		}
+	}
+
 	int maxScore = largestScore >= 100 ? 5 : largestScore >= 10 ? 4 : 3;
 	int maxSB = largestSB >= 100 ? 6 : largestSB >= 10 ? 5 : 4;
 	QString crossTableHeaderText = QString("%1 %2 %3 %4 %5")
@@ -366,6 +401,7 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 		.arg("Elo", -4)
 		.arg("Pts", maxScore)
 		.arg("SB", maxSB);
+
 	QString crossTableBodyText;
 
 	QList<CrossTableData> list = ctMap.values();
