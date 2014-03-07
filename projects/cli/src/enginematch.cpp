@@ -247,7 +247,11 @@ public:
 
 	CrossTableData(QString engineName, int elo = 0) :
 		m_score(0),
-		m_neustadtlScore(0)
+		m_neustadtlScore(0),
+		m_gamesPlayedAsWhite(0),
+		m_gamesPlayedAsBlack(0),
+		m_winsAsWhite(0),
+		m_winsAsBlack(0)
 	{
 		m_engineName = engineName;
 		m_elo = elo;
@@ -256,7 +260,11 @@ public:
 	CrossTableData() :
 	m_score(0),
 	m_neustadtlScore(0),
-	m_elo(0)
+	m_elo(0),
+	m_gamesPlayedAsWhite(0),
+	m_gamesPlayedAsBlack(0),
+	m_winsAsWhite(0),
+	m_winsAsBlack(0)
 	{
 
 	};
@@ -268,13 +276,30 @@ public:
 	double m_score;
 	double m_neustadtlScore;
 	int m_elo;
+	int m_gamesPlayedAsWhite;
+	int m_gamesPlayedAsBlack;
+	int m_winsAsWhite;
+	int m_winsAsBlack;
 	QMap<QString, QString> m_tableData;
 };
 
 bool sortCrossTableDataByScore(const CrossTableData &s1, const CrossTableData &s2)
 {
-	if (s1.m_score == s2.m_score)
-		return s1.m_neustadtlScore > s2.m_neustadtlScore;
+	if (s1.m_score == s2.m_score) {
+		if (s1.m_neustadtlScore == s2.m_neustadtlScore) {
+			if (s1.m_gamesPlayedAsBlack == s2.m_gamesPlayedAsBlack) {
+				if ((s1.m_winsAsWhite + s1.m_winsAsBlack) == (s2.m_winsAsWhite + s2.m_winsAsBlack)) {
+					return (s1.m_winsAsBlack > s2.m_winsAsBlack);
+				} else {
+					return (s1.m_winsAsWhite + s1.m_winsAsBlack) > (s2.m_winsAsWhite + s2.m_winsAsBlack);
+				}
+			} else {
+				return s1.m_gamesPlayedAsBlack > s2.m_gamesPlayedAsBlack;
+			}
+		} else {
+			return s1.m_neustadtlScore > s2.m_neustadtlScore;
+		}
+	}
 	return s1.m_score > s2.m_score;
 }
 
@@ -319,10 +344,12 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 			}
 			if (result == "1-0") {
 				whiteData.m_score += 1;
+				whiteData.m_winsAsWhite++;
 				whiteDataString += "1";
 				blackDataString += "0";
 			} else if (result == "0-1") {
 				blackData.m_score += 1;
+				blackData.m_winsAsBlack++;
 				whiteDataString += "0";
 				blackDataString += "1";
 			} else if (result == "1/2-1/2") {
@@ -333,6 +360,8 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 			}
 			if (whiteDataString.length() > roundLength) roundLength = whiteDataString.length();
 			if (blackDataString.length() > roundLength) roundLength = blackDataString.length();
+			whiteData.m_gamesPlayedAsWhite++;
+			blackData.m_gamesPlayedAsBlack++;
 		}
 	}
 	// calculate SB
@@ -395,11 +424,13 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 
 	int maxScore = largestScore >= 100 ? 5 : largestScore >= 10 ? 4 : 3;
 	int maxSB = largestSB >= 100 ? 6 : largestSB >= 10 ? 5 : 4;
-	QString crossTableHeaderText = QString("%1 %2 %3 %4 %5")
+	int maxGames = m_tournament->currentRound() >= 100 ? 4 : m_tournament->currentRound() >= 10 ? 3 : 2;
+	QString crossTableHeaderText = QString("%1 %2 %3 %4 %5 %6")
 		.arg("N", 2)
 		.arg("Engine", -maxName)
 		.arg("Elo", -4)
 		.arg("Pts", maxScore)
+		.arg("Gm", maxGames)
 		.arg("SB", maxSB);
 
 	QString crossTableBodyText;
@@ -411,11 +442,12 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 	for (i = list.begin(); i != list.end(); ++i, ++count) {
 		crossTableHeaderText += QString(" %1").arg(i->m_engineAbbrev, -roundLength);
 
-		crossTableBodyText += QString("%1 %2 %3 %4 %5")
+		crossTableBodyText += QString("%1 %2 %3 %4 %5 %6")
 			.arg(count, 2)
 			.arg(i->m_engineName, -maxName)
 			.arg(i->m_elo, 4)
 			.arg(i->m_score, maxScore, 'f', 1)
+			.arg(i->m_gamesPlayedAsWhite + i->m_gamesPlayedAsBlack, maxGames)
 			.arg(i->m_neustadtlScore, maxSB, 'f', 2);
 
 		QList<CrossTableData>::iterator j;
