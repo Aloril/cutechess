@@ -98,7 +98,7 @@ void GameAdjudicator::addEval(const Chess::Board* board, const MoveEvaluation& e
 				m_drawScoreCount++;
 			else
 				m_drawScoreCount = 0;
-			if (board->plyCount() / 2 + 1 >= m_drawMoveNum
+			if (board->plyCount() / 2 >= m_drawMoveNum
 			&&  m_drawScoreCount >= m_drawMoveCount * 2)
 			{
 				m_result = Chess::Result(Chess::Result::Adjudication, Chess::Side::NoSide, "TCEC draw rule");
