@@ -18,6 +18,7 @@
 #include "cutechesscoreapp.h"
 #include <QSettings>
 #include <QTime>
+#include <QElapsedTimer>
 #include <QFileInfo>
 #include <QDir>
 #include <mersenne.h>

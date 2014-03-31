@@ -319,7 +319,8 @@ void TimeControl::startTimer()
 
 void TimeControl::update()
 {
-	m_lastMoveTime = m_time.elapsed();
+	Q_ASSERT(m_time.elapsed <= INT_MAX);
+	m_lastMoveTime = (int)m_time.elapsed();
 
 	if (!m_infinite && m_lastMoveTime > m_timeLeft + m_expiryMargin)
 		m_expired = true;
@@ -329,11 +330,11 @@ void TimeControl::update()
 	else
 	{
 		setTimeLeft(m_timeLeft + m_increment - m_lastMoveTime);
-		
+
 		if (m_movesPerTc > 0)
 		{
 			setMovesLeft(m_movesLeft - 1);
-			
+
 			// Restart the time control
 			if (m_movesLeft == 0)
 			{

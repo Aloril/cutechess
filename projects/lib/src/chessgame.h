@@ -130,7 +130,7 @@ class LIB_EXPORT ChessGame : public QObject
 		QSemaphore m_pauseSem;
 		QSemaphore m_resumeSem;
 		GameAdjudicator m_adjudicator;
-		QTime m_gameTimer;
+		QElapsedTimer m_gameTimer;
 		QString m_gameDuration;
 };
 

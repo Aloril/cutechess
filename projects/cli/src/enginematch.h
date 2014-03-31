@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QMap>
 #include <QString>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QtGlobal>
 #include <QDebug>
 #include <QTextStream>
@@ -69,7 +69,7 @@ class EngineMatch : public QObject
 		bool m_debug;
 		int m_ratingInterval;
 		QMap<QString, OpeningBook*> m_books;
-		QTime m_startTime;
+		QElapsedTimer m_startTime;
 		QString m_tournamentFile;
 };
 

@@ -18,7 +18,7 @@
 #ifndef TIMECONTROL_H
 #define TIMECONTROL_H
 
-#include <QTime>
+#include <QElapsedTimer>
 #include <QString>
 #include <QCoreApplication>
 
@@ -152,10 +152,10 @@ class LIB_EXPORT TimeControl
 
 		/*! Sets the time per move. */
 		void setTimePerMove(int timePerMove);
-		
+
 		/*! Sets the time left in the time control. */
 		void setTimeLeft(int timeLeft);
-		
+
 		/*! Sets the number of full moves left in the time control. */
 		void setMovesLeft(int movesLeft);
 
@@ -168,10 +168,10 @@ class LIB_EXPORT TimeControl
 		/*! Sets the expiry margin. */
 		void setExpiryMargin(int expiryMargin);
 
-		
+
 		/*! Start the timer. */
 		void startTimer();
-		
+
 		/*! Update the time control with the elapsed time. */
 		void update();
 
@@ -203,7 +203,7 @@ class LIB_EXPORT TimeControl
 		int m_expiryMargin;
 		bool m_expired;
 		bool m_infinite;
-		QTime m_time;
+		QElapsedTimer m_time;
 
 };
 
