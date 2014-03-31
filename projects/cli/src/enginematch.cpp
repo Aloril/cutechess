@@ -21,6 +21,7 @@
 #include "enginematch.h"
 #include <cmath>
 #include <QMultiMap>
+#include <QTextCodec>
 #include <chessplayer.h>
 #include <playerbuilder.h>
 #include <chessgame.h>
@@ -236,6 +237,7 @@ void EngineMatch::generateSchedule(QVariantList& pList)
 			qWarning("cannot open tournament configuration file: %s", qPrintable(scheduleFile));
 		} else {
 			QTextStream out(&output);
+			out.setCodec(QTextCodec::codecForName("latin1")); // otherwise output is converted to ASCII
 			out << scheduleText;
 		}
 	}
@@ -452,8 +454,11 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 
 		QList<CrossTableData>::iterator j;
 		for (j = list.begin(); j != list.end(); ++j) {
-			if (j->m_engineName == i->m_engineName) crossTableBodyText += QString(" %1").arg(" ", roundLength);
-			else crossTableBodyText += QString(" %1").arg(i->m_tableData[j->m_engineName], -roundLength);
+			if (j->m_engineName == i->m_engineName) {
+				crossTableBodyText += " ";
+				int rl = roundLength;
+				while(rl--) crossTableBodyText += "\u00B7";
+			} else crossTableBodyText += QString(" %1").arg(i->m_tableData[j->m_engineName], -roundLength);
 		}
 		crossTableBodyText += "\n";
 	}
@@ -468,6 +473,7 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 		qWarning("cannot open tournament configuration file: %s", qPrintable(crossTableFile));
 	} else {
 		QTextStream out(&output);
+		out.setCodec(QTextCodec::codecForName("latin1")); // otherwise output is converted to ASCII
 		out << crossTableText;
 	}
 }
