@@ -428,7 +428,7 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 	QString crossTableHeaderText = QString("%1 %2 %3 %4 %5 %6")
 		.arg("N", 2)
 		.arg("Engine", -maxName)
-		.arg("Elo", -4)
+		.arg("Rtng", -4)
 		.arg("Pts", maxScore)
 		.arg("Gm", maxGames)
 		.arg("SB", maxSB);
