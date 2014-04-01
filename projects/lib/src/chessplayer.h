@@ -260,6 +260,7 @@ class LIB_EXPORT ChessPlayer : public QObject
 
 	private:
 		void startClock();
+		void startTimer();
 
 		QString m_name;
 		State m_state;

@@ -125,7 +125,12 @@ void ChessPlayer::startClock()
 		emit startedThinking(m_timeControl.timeLeft());
 
 	m_timeControl.startTimer();
+	startTimer();
+}
 
+void ChessPlayer::startTimer()
+{
+	m_timer->stop(); // just to be sure
 	if (!m_timeControl.isInfinite())
 	{
 		int t = m_timeControl.timeLeft() + m_timeControl.expiryMargin();
@@ -271,5 +276,8 @@ void ChessPlayer::onCrashed()
 
 void ChessPlayer::onTimeout()
 {
-	forfeit(Chess::Result::Timeout);
+	// double-check if we really expired from the QElapsedTimer, which doesn't get confused by time changes
+	if (m_timeControl.expired())
+		forfeit(Chess::Result::Timeout);
+	else startTimer(); // otherwise, reschedule
 }
