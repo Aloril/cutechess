@@ -377,10 +377,14 @@ void EngineMatch::generateCrossTable(QVariantList& pList)
 		double sb = 0;
 		while (td.hasNext()) {
 			td.next();
-			if (td.value().contains("1")) {
-				sb += ctMap[td.key()].m_score;
-			} else if (td.value().contains("=")) {
-				sb += ctMap[td.key()].m_score / 2.;
+			QString::ConstIterator c = td.value().begin();
+			while (c != td.value().end()) {
+				if (*c == QChar('1')) {
+					sb += ctMap[td.key()].m_score;
+				} else if (*c == QChar('=')) {
+					sb += ctMap[td.key()].m_score / 2.;
+				}
+				c++;
 			}
 		}
 		ctd.m_neustadtlScore = sb;
