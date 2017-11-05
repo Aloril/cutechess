@@ -2,6 +2,7 @@ TEMPLATE = app
 
 win32:config += CONSOLE
 CONFIG += qtestlib
+CONFIG += c++11
 
 include(../lib.pri)
 

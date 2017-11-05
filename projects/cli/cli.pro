@@ -22,6 +22,8 @@ mac {
     CONFIG -= app_bundle
 }
 
+CONFIG += c++11
+
 QT = core
 
 # Code

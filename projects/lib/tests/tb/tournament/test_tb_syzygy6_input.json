@@ -1,0 +1,35 @@
+{
+  "tournamentSettings": {
+    "openings": ["file=tb_adjudication_all.pgn"],
+    "pgnOutput": "test_tb_syzygy6.pgn",
+    "tb": {
+        "tbpaths": "/usr/games/syzygy",
+        "tbpieces": 6
+    },
+    "gamesPerEncounter": 1,
+    "roundMultiplier": 7,
+    "srand": 42
+  },
+  "engineSettings": {
+    "engines": [
+      [
+        "name=Stockfish 8A",
+        "cmd=stockfish_8" ,
+        "option.SyzygyPath=/usr/games/syzygy",
+        "option.Move Overhead=100",
+        "option.Hash=128"
+      ],
+      [
+        "name=Stockfish 8B",
+        "cmd=stockfish_8" ,
+        "option.SyzygyPath=/usr/games/syzygy",
+        "option.Move Overhead=100",
+        "option.Hash=128"
+      ]
+    ],
+    "each": [
+      "proto=uci",
+      "tc=10+0.1"
+    ]
+  }
+}

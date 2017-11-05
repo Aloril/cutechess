@@ -24,7 +24,7 @@
 #include <mersenne.h>
 #include <enginemanager.h>
 #include <gamemanager.h>
-#include <board/gaviotatablebase.h>
+#include <board/syzygytablebase.h>
 #include <cstdlib>
 #include <cstdio>
 
@@ -58,7 +58,6 @@ CuteChessCoreApplication::CuteChessCoreApplication(int& argc, char* argv[])
 
 CuteChessCoreApplication::~CuteChessCoreApplication()
 {
-	GaviotaTablebase::cleanup();
 }
 
 #if QT_VERSION >= 0x050000

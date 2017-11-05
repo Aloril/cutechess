@@ -1,4 +1,5 @@
 #include <QtTest/QtTest>
+#include <QtConcurrent/QtConcurrent>
 #include <board/board.h>
 #include <board/boardfactory.h>
 

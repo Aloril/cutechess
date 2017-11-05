@@ -36,7 +36,7 @@
 #include <enginetextoption.h>
 #include <openingsuite.h>
 #include <sprt.h>
-#include <board/gaviotatablebase.h>
+#include <board/syzygytablebase.h>
 #include <jsonparser.h>
 #include <jsonserializer.h>
 
@@ -326,8 +326,9 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 	parser.addOption("-concurrency", QVariant::Int, 1, 1);
 	parser.addOption("-draw", QVariant::StringList);
 	parser.addOption("-resign", QVariant::StringList);
-	parser.addOption("-gtbscheme", QVariant::String, 1, 1);
-	parser.addOption("-gtb", QVariant::String, 1, 1);
+	parser.addOption("-tb", QVariant::String, 1, 1);
+	parser.addOption("-tbpieces", QVariant::Int, 1, 1);
+	parser.addOption("-tbignore50", QVariant::Bool, 0, 0);
 	parser.addOption("-tournament", QVariant::String, 1, 1);
 	parser.addOption("-event", QVariant::String, 1, 1);
 	parser.addOption("-games", QVariant::Int, 1, 1);
@@ -429,9 +430,10 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 	if (!tournamentFile.isEmpty()) match->setTournamentFile(tournamentFile);
 
 	GameAdjudicator adjudicator;
-	GaviotaTablebase::CompressionScheme gtbscheme = GaviotaTablebase::CP4;
 	MatchParser::Option openingsOption = {"", QVariant()};
-	QString gtbpaths;
+	bool tbignore50 = false;
+	int tbpieces = INT_MAX;
+	QString tbpaths;
 	QList<EngineData> engines;
 	QStringList eachOptions;
 
@@ -491,18 +493,25 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 				adjudicator.setResignThreshold(rMap["movecount"].toInt(), -(rMap["score"].toInt()));
 			}
 		}
-		if (tMap.contains("gtb")) {
-			QVariantMap gMap = tMap["gtb"].toMap();
-			if (gMap.contains("gtbscheme"))
-				gtbscheme = (GaviotaTablebase::CompressionScheme)gMap["gtbscheme"].toInt();
-			if (gMap.contains("gtbpaths")) {
-				QStringList paths = gMap["gtbpaths"].toStringList();
+		if (tMap.contains("tb")) {
+			QVariantMap sMap = tMap["tb"].toMap();
+			if (sMap.contains("tbpaths")) {
+				tbpaths = sMap["tbpaths"].toString();
 				adjudicator.setTablebaseAdjudication(true);
-				bool ok = GaviotaTablebase::initialize(paths, gtbscheme) &&
-				     GaviotaTablebase::tbAvailable(3);
+				bool ok = SyzygyTablebase::initialize(tbpaths) &&
+				  SyzygyTablebase::tbAvailable(3);
 				if (!ok) {
-					qWarning("Could not load Gaviota tablebases");
+					qWarning("Could not load Syzygy tablebases");
 				}
+				// Syzygy tablebase pieces
+				if(sMap.contains("tbpieces")) {
+					int pieces = sMap["tbpieces"].toInt();
+					if(2 < pieces)
+						SyzygyTablebase::setPieces(pieces);
+				}
+				// Syzygy ignore 50-move-rule
+				if(sMap.contains("tbignore50") && sMap["tbignore50"]!="false")
+					SyzygyTablebase::setNoRule50();
 			}
 		}
 		if (tMap.contains("openings")) {
@@ -626,12 +635,27 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 					tMap.insert("resignAdjudication", rMap);
 				}
 			}
-			// Gaviota tablebase adjudication
-			else if (name == "-gtbscheme")
-				gtbscheme = (GaviotaTablebase::CompressionScheme)value.toInt();
-			// Gaviota tablebase adjudication
-			else if (name == "-gtb")
-				gtbpaths = value.toString();
+			// Syzygy tablebase adjudication
+			else if (name == "-tb") {
+				tbpaths = value.toString();
+				ok = SyzygyTablebase::initialize(tbpaths) &&
+				     SyzygyTablebase::tbAvailable(3);
+	 			if (!ok)
+					qWarning("Could not load Syzygy tablebases");
+	 		}
+			// Syzygy tablebase pieces
+			else if (name == "-tbpieces")
+			{
+				tbpieces = value.toInt();
+				ok = value.toInt() > 2;
+				if (ok)
+					SyzygyTablebase::setPieces(value.toInt());
+			}
+			// Syzygy ignore 50-move-rule
+			else if (name == "-tbignore50") {
+				tbignore50 = true;
+				SyzygyTablebase::setNoRule50();
+			}
 			// Event name
 			else if (name == "-event") {
 				tournament->setName(value.toString());
@@ -765,18 +789,20 @@ static EngineMatch* parseMatch(const QStringList& args, QObject* parent)
 			}
 		}
 
-		if (!gtbpaths.isEmpty()) {
-			QStringList paths = QStringList() << gtbpaths;
+		if (!tbpaths.isEmpty()) {
 			adjudicator.setTablebaseAdjudication(true);
-			bool ok = GaviotaTablebase::initialize(paths, gtbscheme) &&
-			     GaviotaTablebase::tbAvailable(3);
+			bool ok = SyzygyTablebase::initialize(tbpaths) &&
+			  SyzygyTablebase::tbAvailable(3);
 			if (!ok) {
-				qWarning("Could not load Gaviota tablebases");
+				qWarning("Could not load Syzygy tablebases");
 			} else {
-				QVariantMap gMap;
-				gMap.insert("gtbscheme", gtbscheme);
-				gMap.insert("gtbpaths", paths);
-				tMap.insert("gtb", gMap);
+				QVariantMap sMap;
+				sMap.insert("tbpaths", tbpaths);
+				if(2 < tbpieces && tbpieces < INT_MAX)
+					sMap.insert("tbpieces", tbpieces);
+				if(tbignore50)
+					sMap.insert("tbignore50", tbignore50);
+				tMap.insert("tb", sMap);
 			}
 		}
 	}
@@ -875,8 +901,8 @@ int main(int argc, char* argv[])
 
 	CuteChessCoreApplication app(argc, argv);
 
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("latin1"));
-	QTextCodec::setCodecForTr(QTextCodec::codecForName("latin1"));
+	//QTextCodec::setCodecForCStrings(QTextCodec::codecForName("latin1"));
+	//QTextCodec::setCodecForTr(QTextCodec::codecForName("latin1"));
 
 	QStringList arguments = CuteChessCoreApplication::arguments();
 	arguments.takeFirst(); // application name

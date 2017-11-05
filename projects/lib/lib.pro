@@ -9,9 +9,11 @@ win32:!static {
     DEFINES += LIB_EXPORT=""
 }
 
+CONFIG += c++11
+
 include(src/src.pri)
 include(components/json/src/json.pri)
-include(3rdparty/gtb/src/gtb.pri)
+include(3rdparty/fathom/src/tb.pri)
 include(res/res.pri)
 
 OBJECTS_DIR = .obj

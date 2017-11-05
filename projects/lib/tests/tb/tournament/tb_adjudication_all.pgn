@@ -1,0 +1,1078 @@
+[Event "TCEC Season 9 - Superfinal"]
+[Site "http://tcec.chessdom.com"]
+[Date "2016.11.15"]
+[Round "17"]
+[White "Stockfish 8"]
+[Black "Houdini 5"]
+[Result "1-0"]
+[BlackElo "3182"]
+[ECO "B78"]
+[EventDate "2016.11.11"]
+[GameDuration "06:09:04"]
+[Opening "Sicilian: Dragon, Yugoslav, Main Line, 12.h4 Nc4: 14.h5"]
+[PlyCount "143"]
+[Termination "adjudication"]
+[TerminationDetails "TB position"]
+[TimeControl "10800+15"]
+[WhiteElo "3228"]
+
+
+1. e4  c5  2. Nf3  d6  3. d4 
+cxd4  4. Nxd4  Nf6  5. Nc3  g6 
+6. Be3  Bg7  7. f3  O-O  8. Qd2 
+Nc6  9. Bc4  Bd7  10. O-O-O  Rc8 
+11. Bb3  Ne5  12. h4  Nc4  13. Bxc4 
+Rxc4 
+14. h5 
+Nxh5 
+15. g4 
+Nf6 
+16. Kb1 
+Re8 
+17. b3 
+Rc8 
+18. Nd5 
+Nxd5 
+19. exd5 
+e5 
+20. dxe6 
+fxe6 
+21. Qh2 
+Qf6 
+22. a4 
+b6 
+23. Qxh7+ 
+Kf7 
+24. g5 
+Qe5 
+25. Rh6 
+Qxe3 
+26. Rxg6 
+Rg8 
+27. f4 
+d5 
+28. f5 
+exf5 
+29. Nxf5 
+Qxb3+ 
+30. cxb3 
+Bxf5+ 
+31. Ka2 
+Rc2+ 
+32. Ka3 
+Bxg6 
+33. Rf1+ 
+Ke7 
+34. Qxg8 
+Bb2+ 
+35. Kb4 
+Bc3+ 
+36. Kb5 
+Bd3+ 
+37. Kc6 
+Be5+ 
+38. Kb7 
+Rc7+ 
+39. Ka8 
+Bxf1 
+40. Qxd5 
+Bg7 
+41. Kb8 
+Rd7 
+42. Qe4+ 
+Kf8 
+43. Qf5+ 
+Rf7 
+44. Qc8+ 
+Ke7 
+45. Qc7+ 
+Ke6 
+46. Qc6+ 
+Kf5 
+47. Qd5+ 
+Be5+ 
+48. Ka8 
+Rf8+ 
+49. Kxa7 
+Be2 
+50. b4 
+Bh5 
+51. Kxb6 
+Bf7 
+52. Qf3+ 
+Bf4 
+53. Qc6 
+Rb8+ 
+54. Ka7 
+Kxg5 
+55. Qd7 
+Bh5 
+56. b5 
+Re8 
+57. b6 
+Be3 
+58. Qd5+ 
+Kh4 
+59. a5 
+Re7+ 
+60. Ka8 
+Re8+ 
+61. Kb7 
+Re7+ 
+62. Kc8 
+Bg4+ 
+63. Kb8 
+Bf4+ 
+64. Ka8 
+Kg3 
+65. Qg8 
+Re5 
+66. a6 
+Re6 
+67. Kb7 
+Be3 
+68. a7 
+Rxb6+ 
+69. Kc7 
+Ra6 
+70. a8=Q 
+Bf4+ 
+71. Kb7 
+Rxa8 
+72. Kxa8 
+1-0
+
+[Event "TCEC Season 9 - Superfinal"]
+[Site "http://tcec.chessdom.com"]
+[Date "2016.11.15"]
+[Round "17"]
+[White "Stockfish 8"]
+[Black "Houdini 5"]
+[Result "1-0"]
+[BlackElo "3182"]
+[ECO "B78"]
+[EventDate "2016.11.11"]
+[GameDuration "06:09:04"]
+[Opening "Sicilian: Dragon, Yugoslav, Main Line, 12.h4 Nc4: 14.h5"]
+[PlyCount "143"]
+[Termination "adjudication"]
+[TerminationDetails "TB position"]
+[TimeControl "10800+15"]
+[WhiteElo "3228"]
+
+{shortened}
+1. e4  c5  2. Nf3  d6  3. d4 
+cxd4  4. Nxd4  Nf6  5. Nc3  g6 
+6. Be3  Bg7  7. f3  O-O  8. Qd2 
+Nc6  9. Bc4  Bd7  10. O-O-O  Rc8 
+11. Bb3  Ne5  12. h4  Nc4  13. Bxc4 
+Rxc4 
+14. h5 
+Nxh5 
+15. g4 
+Nf6 
+16. Kb1 
+Re8 
+17. b3 
+Rc8 
+18. Nd5 
+Nxd5 
+19. exd5 
+e5 
+20. dxe6 
+fxe6 
+21. Qh2 
+Qf6 
+22. a4 
+b6 
+23. Qxh7+ 
+Kf7 
+24. g5 
+Qe5 
+25. Rh6 
+Qxe3 
+26. Rxg6 
+Rg8 
+27. f4 
+d5 
+28. f5 
+exf5 
+29. Nxf5 
+Qxb3+ 
+30. cxb3 
+Bxf5+ 
+31. Ka2 
+Rc2+ 
+32. Ka3 
+Bxg6 
+33. Rf1+ 
+Ke7 
+34. Qxg8 
+Bb2+ 
+35. Kb4 
+Bc3+ 
+36. Kb5 
+Bd3+ 
+37. Kc6 
+Be5+ 
+38. Kb7 
+Rc7+ 
+39. Ka8 
+Bxf1 
+40. Qxd5 
+Bg7 
+41. Kb8 
+Rd7 
+42. Qe4+ 
+Kf8 
+43. Qf5+ 
+Rf7 
+44. Qc8+ 
+Ke7 
+45. Qc7+ 
+Ke6 
+46. Qc6+ 
+Kf5 
+47. Qd5+ 
+Be5+ 
+48. Ka8 
+Rf8+ 
+49. Kxa7 
+Be2 
+50. b4 
+Bh5 
+51. Kxb6 
+Bf7 
+52. Qf3+ 
+Bf4 
+53. Qc6 
+Rb8+ 
+54. Ka7 
+Kxg5 
+55. Qd7 
+Bh5 
+56. b5 
+Re8 
+57. b6 
+Be3 
+58. Qd5+ 
+Kh4 
+59. a5 
+Re7+ 
+60. Ka8 
+Re8+ 
+61. Kb7 
+Re7+ 
+62. Kc8 
+Bg4+ 
+63. Kb8 
+Bf4+ 
+64. Ka8 
+Kg3 
+65. Qg8 
+Re5 
+66. a6 
+Re6 
+67. Kb7 
+Be3 
+68. a7 
+Rxb6+ 
+69. Kc7 
+Ra6 
+70. a8=Q 
+Bf4+ 
+71. Kb7 
+Rxa8 
+1-0
+
+[Event "TCEC Season 9 - Superfinal"]
+[Site "http://tcec.chessdom.com"]
+[Date "2016.11.15"]
+[Round "17"]
+[White "Stockfish 8"]
+[Black "Houdini 5"]
+[Result "1-0"]
+[BlackElo "3182"]
+[ECO "B78"]
+[EventDate "2016.11.11"]
+[GameDuration "06:09:04"]
+[Opening "Sicilian: Dragon, Yugoslav, Main Line, 12.h4 Nc4: 14.h5"]
+[PlyCount "143"]
+[Termination "adjudication"]
+[TerminationDetails "TB position"]
+[TimeControl "10800+15"]
+[WhiteElo "3228"]
+
+{shortened}
+1. e4  c5  2. Nf3  d6  3. d4 
+cxd4  4. Nxd4  Nf6  5. Nc3  g6 
+6. Be3  Bg7  7. f3  O-O  8. Qd2 
+Nc6  9. Bc4  Bd7  10. O-O-O  Rc8 
+11. Bb3  Ne5  12. h4  Nc4  13. Bxc4 
+Rxc4 
+14. h5 
+Nxh5 
+15. g4 
+Nf6 
+16. Kb1 
+Re8 
+17. b3 
+Rc8 
+18. Nd5 
+Nxd5 
+19. exd5 
+e5 
+20. dxe6 
+fxe6 
+21. Qh2 
+Qf6 
+22. a4 
+b6 
+23. Qxh7+ 
+Kf7 
+24. g5 
+Qe5 
+25. Rh6 
+Qxe3 
+26. Rxg6 
+Rg8 
+27. f4 
+d5 
+28. f5 
+exf5 
+29. Nxf5 
+Qxb3+ 
+30. cxb3 
+Bxf5+ 
+31. Ka2 
+Rc2+ 
+32. Ka3 
+Bxg6 
+33. Rf1+ 
+Ke7 
+34. Qxg8 
+Bb2+ 
+35. Kb4 
+Bc3+ 
+36. Kb5 
+Bd3+ 
+37. Kc6 
+Be5+ 
+38. Kb7 
+Rc7+ 
+39. Ka8 
+Bxf1 
+40. Qxd5 
+Bg7 
+41. Kb8 
+Rd7 
+42. Qe4+ 
+Kf8 
+43. Qf5+ 
+Rf7 
+44. Qc8+ 
+Ke7 
+45. Qc7+ 
+Ke6 
+46. Qc6+ 
+Kf5 
+47. Qd5+ 
+Be5+ 
+48. Ka8 
+Rf8+ 
+49. Kxa7 
+Be2 
+50. b4 
+Bh5 
+51. Kxb6 
+Bf7 
+52. Qf3+ 
+Bf4 
+53. Qc6 
+Rb8+ 
+54. Ka7 
+Kxg5 
+55. Qd7 
+Bh5 
+56. b5 
+Re8 
+57. b6 
+Be3 
+58. Qd5+ 
+Kh4 
+59. a5 
+Re7+ 
+60. Ka8 
+Re8+ 
+61. Kb7 
+Re7+ 
+62. Kc8 
+Bg4+ 
+63. Kb8 
+Bf4+ 
+64. Ka8 
+Kg3 
+65. Qg8 
+Re5 
+66. a6 
+Re6 
+67. Kb7 
+Be3 
+68. a7 
+Rxb6+ 
+69. Kc7 
+Ra6 
+70. a8=Q 
+Bf4+ 
+71. Kb7 
+1-0
+
+[Event "TCEC Season 10 - Stage 1"]
+[Site "http://tcec.chessdom.com"]
+[Date "2017.10.30"]
+[Round "17"]
+[White "Fizbo 1.91"]
+[Black "Nirvana 2.4"]
+[Result "1/2-1/2"]
+[BlackElo "3034"]
+[ECO "B20"]
+[EventDate "2017.10.14"]
+[GameDuration "02:11:52"]
+[Opening "Sicilian: 2.d3"]
+[PlyCount "161"]
+[Termination "adjudication"]
+[TerminationDetails "TB position"]
+[TimeControl "3600+10"]
+[WhiteElo "2899"]
+
+
+1. e4  c5  2. d3  d5 
+3. exd5 
+Qxd5 
+4. Nc3 
+Qd7 
+5. Nf3 
+Nc6 
+6. a4 
+e6 
+7. a5 
+Nge7 
+8. g3 
+Nf5 
+9. Bg2 
+Be7 
+10. O-O 
+O-O 
+11. Ne4 
+e5 
+12. c3 
+Qc7 
+13. h3 
+g6 
+14. g4 
+Ng7 
+15. Bh6 
+a6 
+16. Re1 
+Rd8 
+17. Nfg5 
+Ne6 
+18. Nxe6 
+Bxe6 
+19. Qf3 
+Nxa5 
+20. h4 
+Nc6 
+21. Re3 
+c4 
+22. dxc4 
+Bxc4 
+23. h5 
+Kh8 
+24. Rae1 
+Bd5 
+25. hxg6 
+fxg6 
+26. Qg3 
+Kg8 
+27. g5 
+Bxe4 
+28. Bxe4 
+Rd2 
+29. Rf3 
+Bf8 
+30. c4 
+Nb4 
+31. Qh3 
+Qd7 
+32. Bd5+ 
+Rxd5 
+33. cxd5 
+Qxh3 
+34. Rxh3 
+Bd6 
+35. Rd1 
+a5 
+36. Rd2 
+Rc8 
+37. Rc3 
+Re8 
+38. Ra3 
+Na6 
+39. Rb3 
+Nb4 
+40. Rc3 
+e4 
+41. Re2 
+Nxd5 
+42. Rc4 
+e3 
+43. fxe3 
+Rxe3 
+44. Rc8+ 
+Kf7 
+45. Rxe3 
+Nxe3 
+46. Rh8 
+Ke6 
+47. Rxh7 
+b6 
+48. Kf2 
+Nc4 
+49. Kf3 
+a4 
+50. Ke4 
+a3 
+51. bxa3 
+Bxa3 
+52. Rg7 
+Ne5 
+53. Rb7 
+Nd7 
+54. Rc7 
+Nc5+ 
+55. Kf3 
+Kd5 
+56. Ra7 
+Bc1 
+57. Ra1 
+Nb3 
+58. Ra6 
+Nd4+ 
+59. Kg4 
+Nf5 
+60. Bf8 
+Ne3+ 
+61. Kf3 
+Nc4 
+62. Be7 
+Ke6 
+63. Ra1 
+Bd2 
+64. Bd8 
+Kf5 
+65. Rf1 
+Bf4 
+66. Ke2 
+Ne5 
+67. Kd1 
+b5 
+68. Kc2 
+Nc6 
+69. Bf6 
+Ne5 
+70. Kc3 
+Nf7 
+71. Kd3 
+Nxg5 
+72. Bb2 
+Ne4 
+73. Rxf4+ 
+Kxf4 
+74. Kd4 
+Kf5 
+75. Bc1 
+Ng5 
+76. Kd5 
+Ne6 
+77. Kc6 
+b4 
+78. Kb5 
+Nf4 
+79. Kc4 
+g5 
+80. Bd2 
+g4 
+81. Bxb4 
+1/2-1/2
+
+[Event "TCEC Season 10 - Stage 1"]
+[Site "http://tcec.chessdom.com"]
+[Date "2017.10.30"]
+[Round "17"]
+[White "Fizbo 1.91"]
+[Black "Nirvana 2.4"]
+[Result "1/2-1/2"]
+[BlackElo "3034"]
+[ECO "B20"]
+[EventDate "2017.10.14"]
+[GameDuration "02:11:52"]
+[Opening "Sicilian: 2.d3"]
+[PlyCount "161"]
+[Termination "adjudication"]
+[TerminationDetails "TB position"]
+[TimeControl "3600+10"]
+[WhiteElo "2899"]
+
+{shortened}
+1. e4  c5  2. d3  d5 
+3. exd5 
+Qxd5 
+4. Nc3 
+Qd7 
+5. Nf3 
+Nc6 
+6. a4 
+e6 
+7. a5 
+Nge7 
+8. g3 
+Nf5 
+9. Bg2 
+Be7 
+10. O-O 
+O-O 
+11. Ne4 
+e5 
+12. c3 
+Qc7 
+13. h3 
+g6 
+14. g4 
+Ng7 
+15. Bh6 
+a6 
+16. Re1 
+Rd8 
+17. Nfg5 
+Ne6 
+18. Nxe6 
+Bxe6 
+19. Qf3 
+Nxa5 
+20. h4 
+Nc6 
+21. Re3 
+c4 
+22. dxc4 
+Bxc4 
+23. h5 
+Kh8 
+24. Rae1 
+Bd5 
+25. hxg6 
+fxg6 
+26. Qg3 
+Kg8 
+27. g5 
+Bxe4 
+28. Bxe4 
+Rd2 
+29. Rf3 
+Bf8 
+30. c4 
+Nb4 
+31. Qh3 
+Qd7 
+32. Bd5+ 
+Rxd5 
+33. cxd5 
+Qxh3 
+34. Rxh3 
+Bd6 
+35. Rd1 
+a5 
+36. Rd2 
+Rc8 
+37. Rc3 
+Re8 
+38. Ra3 
+Na6 
+39. Rb3 
+Nb4 
+40. Rc3 
+e4 
+41. Re2 
+Nxd5 
+42. Rc4 
+e3 
+43. fxe3 
+Rxe3 
+44. Rc8+ 
+Kf7 
+45. Rxe3 
+Nxe3 
+46. Rh8 
+Ke6 
+47. Rxh7 
+b6 
+48. Kf2 
+Nc4 
+49. Kf3 
+a4 
+50. Ke4 
+a3 
+51. bxa3 
+Bxa3 
+52. Rg7 
+Ne5 
+53. Rb7 
+Nd7 
+54. Rc7 
+Nc5+ 
+55. Kf3 
+Kd5 
+56. Ra7 
+Bc1 
+57. Ra1 
+Nb3 
+58. Ra6 
+Nd4+ 
+59. Kg4 
+Nf5 
+60. Bf8 
+Ne3+ 
+61. Kf3 
+Nc4 
+62. Be7 
+Ke6 
+63. Ra1 
+Bd2 
+64. Bd8 
+Kf5 
+65. Rf1 
+Bf4 
+66. Ke2 
+Ne5 
+67. Kd1 
+b5 
+68. Kc2 
+Nc6 
+69. Bf6 
+Ne5 
+70. Kc3 
+Nf7 
+71. Kd3 
+Nxg5 
+72. Bb2 
+Ne4 
+73. Rxf4+ 
+1/2-1/2
+
+[Event "TCEC Season 10 - Stage 1"]
+[Site "http://tcec.chessdom.com"]
+[Date "2017.10.31"]
+[Round "17"]
+[White "Houdini 6.02"]
+[Black "Stockfish 041017"]
+[Result "1/2-1/2"]
+[BlackElo "3227"]
+[ECO "C54"]
+[EventDate "2017.10.14"]
+[GameDuration "02:15:09"]
+[Opening "Giuoco Pianissimo: 5.d3 d6 6.O-O O-O"]
+[PlyCount "138"]
+[Termination "adjudication"]
+[TerminationDetails "TCEC draw rule"]
+[TimeControl "3600+10"]
+[WhiteElo "3184"]
+
+{shortened}
+1. e4  e5  2. Bc4  Nc6 
+3. d3 
+Bc5 
+4. Nf3 
+Nf6 
+5. c3 
+O-O 
+6. O-O 
+d6 
+7. Bg5 
+h6 
+8. Bh4 
+g5 
+9. Bg3 
+a6 
+10. a4 
+g4 
+11. Bh4 
+Kg7 
+12. Ne1 
+Ne7 
+13. Bxf6+ 
+Kxf6 
+14. d4 
+Ba7 
+15. f3 
+exd4 
+16. cxd4 
+Kg7 
+17. Nc3 
+f5 
+18. Nc2 
+gxf3 
+19. Qxf3 
+Ng6 
+20. Kh1 
+f4 
+21. Ne2 
+Qg5 
+22. Qb3 
+Nh4 
+23. Ne1 
+Bg4 
+24. Rf2 
+Bxe2 
+25. Rxe2 
+Bxd4 
+26. Rd1 
+c5 
+27. Nf3 
+Nxf3 
+28. gxf3 
+Kh8 
+29. Rg2 
+Qe7 
+30. a5 
+Rab8 
+31. Bd5 
+Rfe8 
+32. Qb6 
+Qd8 
+33. b3 
+Kh7 
+34. Rg4 
+Re7 
+35. Qxd8 
+Rxd8 
+36. Rxf4 
+Bc3 
+37. Rg1 
+Bxa5 
+38. Rf6 
+Rg7 
+39. Rxg7+ 
+Kxg7 
+40. Rf7+ 
+Kg6 
+41. f4 
+b5 
+42. Kg2 
+Bc3 
+43. Be6 
+c4 
+44. bxc4 
+b4 
+45. h4 
+h5 
+46. Kf3 
+b3 
+47. Rb7 
+b2 
+48. Ke2 
+Kf6 
+49. Kd3 
+Be5 
+50. fxe5+ 
+Kxe6 
+51. exd6 
+Kxd6 
+52. Rxb2 
+Ke5+ 
+53. Kc3 
+Kxe4 
+54. Re2+ 
+Kf3 
+55. Re6 
+Kg3 
+56. c5 
+Kxh4 
+1/2-1/2
+
+[Event "TCEC Season 10 - Stage 1"]
+[Site "http://tcec.chessdom.com"]
+[Date "2017.11.01"]
+[Round "18"]
+[White "Fizbo 1.91"]
+[Black "Wasp 2.5"]
+[Result "1-0"]
+[BlackElo "2824"]
+[ECO "A09"]
+[EventDate "2017.10.14"]
+[GameDuration "02:27:02"]
+[Opening "Reti: Advance Variation"]
+[PlyCount "172"]
+[Termination "adjudication"]
+[TerminationDetails "TB position"]
+[TimeControl "3600+10"]
+[WhiteElo "2899"]
+
+{shortened}
+1. Nf3  d5  2. c4  d4 
+3. d3 
+Nc6 
+4. e3 
+e5 
+5. Be2 
+Nf6 
+6. O-O 
+Bc5 
+7. exd4 
+exd4 
+8. Bg5 
+h6 
+9. Bxf6 
+Qxf6 
+10. Nbd2 
+Qd8 
+11. a3 
+a5 
+12. Ne4 
+Be7 
+13. Ng3 
+O-O 
+14. Qc2 
+f5 
+15. Rae1 
+Qd6 
+16. Bd1 
+a4 
+17. Ne2 
+Rf7 
+18. Qb1 
+Kh7 
+19. h3 
+f4 
+20. Nc1 
+Bf5 
+21. Qc2 
+Bf6 
+22. Nd2 
+Ne5 
+23. Nf3 
+c5 
+24. Nxe5 
+Bxe5 
+25. Bf3 
+Kh8 
+26. b3 
+axb3 
+27. Nxb3 
+Rxa3 
+28. Ra1 
+Rxa1 
+29. Rxa1 
+b6 
+30. Qe2 
+Qe7 
+31. Bd5 
+Bb8 
+32. Qf3 
+Rf8 
+33. Nd2 
+g6 
+34. Be4 
+Bxe4 
+35. Nxe4 
+Kg7 
+36. Nd2 
+Qd7 
+37. Qd1 
+Qe6 
+38. Kf1 
+Rf7 
+39. f3 
+Ra7 
+40. Rxa7+ 
+Bxa7 
+41. Qa4 
+Bb8 
+42. Qa8 
+Bc7 
+43. Qb7 
+Qf7 
+44. Qc8 
+Qe7 
+45. Ne4 
+Qd8 
+46. Qe6 
+Bb8 
+47. h4 
+Bc7 
+48. h5 
+gxh5 
+49. Qf5 
+h4 
+50. Qe6 
+Qf8 
+51. Qg4+ 
+Kh8 
+52. Qg6 
+Qg7 
+53. Qe8+ 
+Qg8 
+54. Qh5 
+Qe6 
+55. Ng5 
+Qc6 
+56. Kf2 
+Bb8 
+57. Ke2 
+Bc7 
+58. Kf1 
+Bb8 
+59. Ke1 
+h3 
+60. Qxh3 
+Qg6 
+61. Ne4 
+Kg7 
+62. Qd7+ 
+Qf7 
+63. Qc6 
+Bc7 
+64. Kd1 
+Qe7 
+65. Kc2 
+Qf7 
+66. Kb3 
+Qe7 
+67. Ka4 
+h5 
+68. Kb5 
+h4 
+69. Ka6 
+Bd8 
+70. Nd6 
+Qe6 
+71. Kb5 
+Kh7 
+72. Nb7 
+Qe7 
+73. Nxd8 
+Qxd8 
+74. Qe4+ 
+Kg7 
+75. Qxf4 
+Qf6 
+76. Qxf6+ 
+Kxf6 
+77. Kxb6 
+Kf5 
+78. Kxc5 
+Kf4 
+79. Kxd4 
+Kg3 
+80. c5 
+1-0
+
